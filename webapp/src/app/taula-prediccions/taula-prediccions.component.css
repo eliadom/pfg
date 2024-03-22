@@ -1,0 +1,20 @@
+table{
+  background-color: #e4e1ef;
+  width: 100%;
+  border-radius: 12px;
+  /*height: calc(50% - 64px);*/
+  font-family: "Inria Sans" !important;
+}
+
+
+.thead{
+  border-radius: 20px;
+}
+.mat-mdc-header-row{
+  background-color: #D2DDFA;
+  border-radius: 20px !important;
+}
+
+.importantRow{
+  font-weight: 600;
+}

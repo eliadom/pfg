@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Rancho&display=swap');
+/* You can add global styles to this file, and also import other style files */
+body {
+    background-color: #BBC8EB;
+  display: flex;
+
+}
+
+html, body {
+
+}
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.active{
+  background-color: #BBC8EB !important;
+}
+
+h1{
+  font-family: "Inria Sans" !important;
+  font-size: 46px !important;
+  font-weight: 600 !important;
+}
+
+.mainContainer{
+  width: calc(100% - 32px);
+  height: calc(100% - 32px);
+  color: #5F5F5F;
+  padding: 16px;
+}
+
+.mat-table{
+   border-radius: 8px !important;
+    overflow:hidden !important;
+}

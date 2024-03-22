@@ -1,0 +1,57 @@
+
+.all{
+  display: flex;
+    font-family: "Inria Sans";
+}
+
+.navbar{
+  width: 370px;
+  height: calc(100% - 34px);
+  background-color: #F5E9E9;
+  border-radius: 20px;
+    margin: 16px;
+  font-family: "Inria Sans";
+}
+
+.logo{
+  height: 140px;
+}
+
+.menuList{
+  padding: 8px;
+
+}
+
+.menuButton{
+  padding: 16px;
+  background-color: #e4e1ef;
+  border-radius: 17px;
+  color: #5F5F5F;
+  margin: 6px;
+  font-size: 20px;
+  font-weight: 600;
+  gap: 6px;
+  display: flex;
+}
+
+.menuButton:hover{
+  background-color: #D2DDFA;
+  cursor: pointer;
+  transition-duration: 0.25s;
+}
+
+.allContainer{
+  display: flex;
+  padding: 16px;
+  width: calc(100vw - 32px);
+  height: calc(100vh - 32px);
+}
+
+router-outlet{
+  width: 100%;
+  display: flex;
+}
+
+.mainElement{
+  width: 100% !important;
+}

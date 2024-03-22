@@ -1,0 +1,18 @@
+<div class="allContainer">
+  <div class="navbar">
+    <div class="logo"></div>
+    <div class="menuList">
+      <div class="menuButton" [routerLink]="'/predict'" routerLinkActive="active">
+        <mat-icon>auto_awesome</mat-icon>
+        Predicció
+      </div>
+      <div class="menuButton" [routerLink]="'/settings'" routerLinkActive="active">
+        <mat-icon>settings</mat-icon>
+        Configuració
+      </div>
+    </div>
+  </div>
+  <div class="mainElement">
+  <router-outlet></router-outlet>
+    </div>
+</div>
