@@ -1,0 +1,23 @@
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DECIMAL
+from sqlalchemy.orm import relationship
+
+from .database import Base
+
+
+class Dades(Base):
+    __tablename__ = "dades"
+
+    id = Column(Integer, primary_key=True)
+    prediccio = Column(DECIMAL)
+
+    # items = relationship("Item", back_populates="owner")
+
+# class Item(Base):
+#     __tablename__ = "items"
+#
+#     id = Column(Integer, primary_key=True)
+#     title = Column(String, index=True)
+#     description = Column(String, index=True)
+#     owner_id = Column(Integer, ForeignKey("users.id"))
+#
+#     owner = relationship("Dades", back_populates="items")

@@ -25,6 +25,7 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
 
 
   result: string = "";
+  loading : number = 0;
 
 
   @ViewChild(MatSort) sort: MatSort;
@@ -50,12 +51,13 @@ this.dataSource.sortingDataAccessor = (item, property) => {
     //       return item[property];
     //   }
     // };
-
-    // this.mainService.getTest().subscribe((test: any) => {
-    //   this.result = test;
-    //   console.log("service recibe:")
-    //   console.log(this.result)
-    // })
+    this.loading--;
+    this.mainService.getTest().subscribe((test: any) => {
+      this.result = test;
+      console.log("service recibe:")
+      console.log(this.result)
+      this.loading++;
+    })
   }
 }
 
