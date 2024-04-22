@@ -1,15 +1,20 @@
-from fastapi import Depends, FastAPI, HTTPException
+import io
+from typing import Annotated
+
+import openpyxl
+from fastapi import Depends, FastAPI, HTTPException, UploadFile, File, Request, Form
 from fastapi.middleware.cors import CORSMiddleware
+from rich import status
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
+
+from . import crud, models, schemas, training
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-
-
 app = FastAPI()
+
 
 def get_db():
     db = SessionLocal()
@@ -22,11 +27,27 @@ def get_db():
 origins = ["*"]
 
 
-
 @app.get("/api/dades/", response_model=list[schemas.Dades])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     dades = crud.get_dades(db, skip=skip, limit=limit)
     return dades
+
+
+@app.post("/api/models/")
+def create_model(file: UploadFile = File(...)):
+    print(file)
+    if file.filename.endswith('.xlsx'):
+        training.processa_dades(file)
+    else:
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@app.post("/api/files/")
+def create_file(file: UploadFile = File(...)):
+    print(file)
+    return {"file_size": "OK"}
+
+
 
 # @app.post("/users/", response_model=schemas.User)
 # def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -57,19 +78,20 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+CORSMiddleware,
+allow_origins = origins,
+allow_credentials = True,
+allow_methods = ["*"],
+allow_headers = ["*"],
 )
-
-# @app.get("/api/")
-# async def root():
-#     return {"message": "Hello World"}
 
 @app.get("/api/")
 async def root():
+    return {"message": "Hello World"}
+
+
+
+def root():
     return "Hello World";
 
 # @app.get("/api/{name}")

@@ -11,12 +11,15 @@ import {SettingsComponent} from "./settings/settings.component";
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {ModelsPassatsComponent} from "./passats/models-passats.component";
+import {MatButtonModule} from "@angular/material/button";
 
 @NgModule({
   declarations: [
     AppComponent,
     TaulaPrediccionsComponent,
-    SettingsComponent
+    SettingsComponent,
+    ModelsPassatsComponent
   ],
   imports: [
     BrowserModule,
@@ -27,6 +30,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatButtonModule,
 
   ],
   providers: [],

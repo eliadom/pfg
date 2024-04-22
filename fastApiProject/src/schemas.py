@@ -19,4 +19,4 @@ class Dades(DadesBase):
     prediccio: condecimal(decimal_places=4)
 
     class Config:
-        orm_mode = True
+        from_attributes = True

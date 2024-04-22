@@ -7,12 +7,16 @@
         Predicció
       </div>
       <div class="menuButton" [routerLink]="'/settings'" routerLinkActive="active">
-        <mat-icon>settings</mat-icon>
-        Configuració
+        <mat-icon>psychology</mat-icon>
+        Entrenament
+      </div>
+      <div class="menuButton" [routerLink]="'/models'" routerLinkActive="active">
+        <mat-icon>history</mat-icon>
+        Models passats
       </div>
     </div>
   </div>
   <div class="mainElement">
-  <router-outlet></router-outlet>
-    </div>
+    <router-outlet></router-outlet>
+  </div>
 </div>

@@ -1,4 +1,21 @@
-
 <div class="mainContainer">
-  <h1>Configuració</h1>
+  <h1>Models passats</h1>
+  <div class="entireDiv">
+    <div class="divForPrompt">
+
+<input type="file" class="file-upload" (change)="onFileSelected($event)" #fileInput style="display: none" accept=".xlsx">
+      <div class="innerDiv">
+        <mat-icon class="bigIcon">file_copy</mat-icon>
+      </div>
+      <div>
+        Penja un arxiu <b>Excel (.xlsx)</b> per entrenar un nou model
+      </div>
+      <button mat-button class="botoDefault" (click)="fileInput.click()">
+        Tria arxiu
+      </button>
+      <div *ngIf="chosenFile">
+        {{fileName}}
+      </div>
+    </div>
+  </div>
 </div>

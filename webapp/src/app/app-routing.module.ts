@@ -3,10 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import {TaulaPrediccionsComponent} from "./taula-prediccions/taula-prediccions.component";
 import {SettingsComponent} from "./settings/settings.component";
 import {BrowserModule} from "@angular/platform-browser";
+import {ModelsPassatsComponent} from "./passats/models-passats.component";
 
 const routes: Routes = [
   { path: 'predict', component: TaulaPrediccionsComponent},
-  { path: 'settings', component: SettingsComponent}
+  { path: 'settings', component: SettingsComponent},
+  { path: 'models', component: ModelsPassatsComponent},
 ];
 
 @NgModule({
