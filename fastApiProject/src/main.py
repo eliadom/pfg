@@ -1,5 +1,11 @@
 import io
+import os
+import shutil
+import subprocess
+from datetime import datetime
 from typing import Annotated
+
+from posixpath import join
 
 import openpyxl
 from fastapi import Depends, FastAPI, HTTPException, UploadFile, File, Request, Form
@@ -8,7 +14,8 @@ from rich import status
 from sqlalchemy.orm import Session
 
 
-from . import crud, models, schemas, training
+
+from . import crud, models, schemas
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -37,7 +44,28 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def create_model(file: UploadFile = File(...)):
     print(file)
     if file.filename.endswith('.xlsx'):
-        training.processa_dades(file)
+        directoriActual = os.path.dirname(os.path.abspath(__file__))
+        path = 'env2'
+        arxiu = 'training.py'
+        rootFolder =  os.path.join(directoriActual, path)
+        environ =  os.path.join(rootFolder, 'Scripts')
+        environ =  os.path.join(environ, 'python')
+        novaRuta = os.path.join(rootFolder, arxiu)
+        nouArxiu = guardaArxiu(file)
+
+        nouEntorn = {
+            "PATH":rootFolder
+        }
+
+        args = [environ, novaRuta, nouArxiu]
+        subprocess.run(args, env=nouEntorn)
+        # subprocess.run(args)
+        # args.wait()
+
+        # env2.processa_dades(novaRuta)
+
+        # training.processa_dades(file)
+
     else:
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -89,7 +117,23 @@ allow_headers = ["*"],
 async def root():
     return {"message": "Hello World"}
 
+def guardaArxiu(file):
+    actual = datetime.now()
+    nouNom = actual.strftime('%d%m%Y%H%M')
+    directoriActual = os.path.dirname(os.path.abspath(__file__))
+    save_path = (os.path.join('model', nouNom + ".xlsx"))
+    novaRuta = os.path.join(directoriActual, save_path)
 
+    with open(novaRuta, "wb") as file_object:
+        file_object.write(file.file.read())
+
+    # with open(novaRuta, 'wb') as newFile:
+    #     for chunk in iter(lambda: file.read(4096), b''):
+    #         newFile.write(chunk)
+    # shutil.move(file,save_path)
+    return novaRuta
+
+    # file.write()
 
 def root():
     return "Hello World";
