@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 
@@ -21,31 +21,37 @@ const requestOptions = {
 const requestOptionsPost = {
   headers: new Headers(headerDictPost),
 };
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class MainService {
 
-  url : string = "/api"
+  url: string = "/api"
 
   constructor(
-    private http : HttpClient
-  ) { }
-
-    getTest() : any {
-    // @ts-ignore
-      // @ts-ignore
-      // @ts-ignore
-      return this.http.get<any>(this.url, requestOptions);
+    private http: HttpClient
+  ) {
   }
 
-uploadFile(file: any) {
-  const formData = new FormData();
-  formData.append('file', file);
-  // formData.append('some', "hola");
-  console.log(formData)
-  return this.http.post<any>(this.url+'/models/', formData);
-}
+  getTest(): any {
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    return this.http.get<any>(this.url, requestOptions);
+  }
+
+  getModels(): any {
+    return this.http.get<any>(this.url + '/models/');
+  }
+
+  uploadFile(file: any) {
+    const formData = new FormData();
+    formData.append('file', file);
+    // formData.append('some', "hola");
+    console.log(formData)
+    return this.http.post<any>(this.url + '/models/', formData);
+  }
 
 }

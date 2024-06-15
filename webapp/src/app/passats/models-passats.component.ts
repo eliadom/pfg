@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MainService} from "../main-service/main.service";
+import {IAModel} from "../model/ia_mod/ia_mod";
 
 @Component({
   selector: 'app-taula-prediccions',
@@ -8,16 +9,19 @@ import {MainService} from "../main-service/main.service";
 })
 export class ModelsPassatsComponent implements OnInit {
   title = 'webapp';
+  models : IAModel[];
+  loading : number = 0;
 
   constructor(
     private mainService : MainService
   ){}
-  result : string = "";
   ngOnInit() {
-    this.mainService.getTest().subscribe((test : any) => {
-      this.result = test;
-      console.log("service recibe:")
-      console.log(this.result)
+    this.loading--;
+    this.mainService.getModels().subscribe((models : IAModel[]) => {
+      this.models = models;
+      this.loading++;
     })
   }
+
+
 }

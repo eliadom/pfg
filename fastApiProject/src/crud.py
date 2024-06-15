@@ -14,6 +14,9 @@ from . import models
 def get_dades(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Dades).offset(skip).limit(limit).all()
 
+def get_models(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Model).offset(skip).limit(limit).all()
+
 
 # def create_user(db: Session, user: schemas.UserCreate):
 #     fake_hashed_password = user.password + "notreallyhashed"

@@ -1,46 +1,66 @@
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Rancho&display=swap');
 /* You can add global styles to this file, and also import other style files */
 body {
-    background-color: #BBC8EB;
+  background-color: #BBC8EB;
   display: flex;
+  font-family: "Inria Sans" !important;
+}
 
+.textGeneric {
+  font-family: "Inria Sans" !important;
+  font-size: 18px;
+  color: #343434;
 }
 
 html, body {
 
 }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.active{
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.active {
   background-color: #BBC8EB !important;
 }
 
-h1{
+h1 {
   font-family: "Inria Sans" !important;
   font-size: 46px !important;
   font-weight: 600 !important;
 }
 
-.mainContainer{
+.mainContainer {
   width: calc(100% - 32px);
   height: calc(100% - 32px);
   color: #5F5F5F;
   padding: 16px;
 }
 
-.mat-table{
-   border-radius: 8px !important;
-    overflow:hidden !important;
+.mat-table {
+  border-radius: 8px !important;
+  overflow: hidden !important;
 }
 
-.entireDiv{
+.entireDiv {
   width: 100%;
   height: calc(100% - 50px);
 }
 
-.botoDefault{
+.botoDefault {
   color: #F5E9E9 !important;
   background-color: #9cadde !important;
   border-radius: 16px !important;
   padding: 16px !important;
+}
+
+/*color custom per la progress bar*/
+.mdc-circular-progress__determinate-circle-graphic, .mdc-circular-progress__indeterminate-circle-graphic {
+  fill: rgba(0, 0, 0, 0);
+  stroke: #7793b7 !important;
+}
+
+.centraText {
+  text-align: center;
 }

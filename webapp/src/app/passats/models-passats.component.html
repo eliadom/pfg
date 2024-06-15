@@ -1,4 +1,28 @@
+<!--<div class="mainContainer" *ngIf="loading === 0">-->
+<!--  <h1>Models passats</h1>-->
+<!--  <div class="contenidorCol">-->
+<!--    <div class="modelPassatMainCont" *ngFor="let model of models">-->
+<!--      <div class="columnaModel" style="font-weight: 600 !important; color: #47628f">-->
+<!--        Model {{ model.id }}-->
+<!--      </div>-->
+<!--      <div class="columnaModel">-->
+<!--        {{ model.dia | date: 'dd/MM/yyyy HH:mm' }}-->
+<!--      </div>-->
+<!--      <div class="columnaModel">-->
+<!--        <div class="reestablirBoto">-->
+<!--          Reestablir-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
-<div class="mainContainer">
-  <h1>Configuració</h1>
+<!--  </div>-->
+<!--</div>-->
+
+<!--<div *ngIf="loading !== 0">-->
+<div class="contenidorSencer">
+  <mat-spinner
+  ></mat-spinner>
+  <div class="textGeneric centraText">
+    S'estan carregant els models...
+  </div>
 </div>

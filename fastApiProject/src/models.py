@@ -1,4 +1,6 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DECIMAL
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DECIMAL, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -11,6 +13,12 @@ class Dades(Base):
     prediccio = Column(DECIMAL)
 
     # items = relationship("Item", back_populates="owner")
+
+class Model(Base):
+    __tablename__ = "model"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    dia = Column(DateTime, default=datetime.utcnow)
 
 # class Item(Base):
 #     __tablename__ = "items"

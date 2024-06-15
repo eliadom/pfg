@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 
 
-from . import crud, models, schemas
+from . import crud, models, schemas, training
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -40,31 +40,48 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return dades
 
 
+@app.get("/api/models/", response_model=list[schemas.Model])
+def read_models(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    models = crud.get_models(db, skip=skip, limit=limit)
+    return models
+
+
+def save_model(db: Session):
+    current_date = datetime.now()
+    db_model = models.Model(dia=current_date)
+    db.add(db_model)
+    db.commit()
+    db.refresh(db_model)
+    return db_model
+
+
 @app.post("/api/models/")
-def create_model(file: UploadFile = File(...)):
+def create_model(file: UploadFile = File(...),  db: Session = Depends(get_db)):
     print(file)
     if file.filename.endswith('.xlsx'):
-        directoriActual = os.path.dirname(os.path.abspath(__file__))
-        path = 'env2'
-        arxiu = 'training.py'
-        rootFolder =  os.path.join(directoriActual, path)
-        environ =  os.path.join(rootFolder, 'Scripts')
-        environ =  os.path.join(environ, 'python')
-        novaRuta = os.path.join(rootFolder, arxiu)
-        nouArxiu = guardaArxiu(file)
+        # directoriActual = os.path.dirname(os.path.abspath(__file__))
+        # path = 'env2'
+        # arxiu = 'training.py'
+        # rootFolder =  os.path.join(directoriActual, path)
+        # environ =  os.path.join(rootFolder, 'Scripts')
+        # environ =  os.path.join(environ, 'python')
+        # novaRuta = os.path.join(rootFolder, arxiu)
+        nouModel = save_model(db)
+        novaId = nouModel.id
+        nouArxiu = guardaArxiu(file, novaId)
 
-        nouEntorn = {
-            "PATH":rootFolder
-        }
-
-        args = [environ, novaRuta, nouArxiu]
-        subprocess.run(args, env=nouEntorn)
+        # nouEntorn = {
+        #     "PATH":rootFolder
+        # }
+        #
+        # args = [environ, novaRuta, nouArxiu]
+        # subprocess.Popen(args).communicate()
         # subprocess.run(args)
         # args.wait()
 
         # env2.processa_dades(novaRuta)
 
-        # training.processa_dades(file)
+        training.processa_dades(nouArxiu)
 
     else:
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -117,11 +134,10 @@ allow_headers = ["*"],
 async def root():
     return {"message": "Hello World"}
 
-def guardaArxiu(file):
-    actual = datetime.now()
-    nouNom = actual.strftime('%d%m%Y%H%M')
+def guardaArxiu(file, id):
     directoriActual = os.path.dirname(os.path.abspath(__file__))
-    save_path = (os.path.join('model', nouNom + ".xlsx"))
+    idName = str(id)
+    save_path = (os.path.join('model', idName + ".xlsx"))
     novaRuta = os.path.join(directoriActual, save_path)
 
     with open(novaRuta, "wb") as file_object:
@@ -131,7 +147,7 @@ def guardaArxiu(file):
     #     for chunk in iter(lambda: file.read(4096), b''):
     #         newFile.write(chunk)
     # shutil.move(file,save_path)
-    return novaRuta
+    return idName
 
     # file.write()
 
