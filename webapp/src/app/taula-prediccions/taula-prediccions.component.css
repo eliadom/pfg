@@ -1,4 +1,4 @@
-table{
+table {
   background-color: #e4e1ef;
   width: 100%;
   border-radius: 12px;
@@ -7,14 +7,70 @@ table{
 }
 
 
-.thead{
+.thead {
   border-radius: 20px;
 }
-.mat-mdc-header-row{
+
+.mat-mdc-header-row {
   background-color: #D2DDFA;
   border-radius: 20px !important;
 }
 
-.importantRow{
+.importantRow {
   font-weight: 600;
+}
+
+.divSimple {
+  background-color: #F5E9E9;
+  border-radius: 20px;
+  width: calc(100% - 32px);
+  height: calc(100% - 82px);
+  padding: 16px;
+
+}
+
+.barraSlider {
+  display: flex;
+  gap: 16px;
+  text-align: center !important;
+  align-items: center !important;
+}
+
+.contenidorSuperior {
+  display: flex;
+  gap: 16px;
+}
+
+.contenidorPrediccions {
+  background-color: #D2DDFA;
+  border-radius: 20px;
+  padding: 16px;
+  width: calc(100% - 32px);
+  height: calc(100% - 82px);
+}
+
+.colPrediccions {
+  background-color: #ADC5F4;
+  border-radius: 20px;
+  padding: 16px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.prediccions {
+  padding: 16px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.col{
+  text-align: center;
+  width: 100%;
+}
+
+.prediccionsOverflow{
+  height: calc(100% - 42px);
+  overflow: scroll;
 }

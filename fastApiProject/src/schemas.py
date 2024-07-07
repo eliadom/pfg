@@ -43,3 +43,20 @@ class Model(ModelBase):
 
     class Config:
         from_attributes = True
+
+#############################################
+class SeleccionatBase(BaseModel):
+    id: int
+
+
+# inherit from dades base + additional attrib
+class SeleccionatCreate(SeleccionatBase):
+    pass
+
+
+# returning from API
+class Seleccionat(SeleccionatBase):
+    id: int
+
+    class Config:
+        from_attributes = True

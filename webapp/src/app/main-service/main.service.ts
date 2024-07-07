@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 
@@ -30,10 +30,27 @@ export class MainService {
 
   url: string = "/api"
 
+  pujantModel: EventEmitter<boolean> = new EventEmitter();
+  pujantModelActual: boolean;
+
   constructor(
     private http: HttpClient
   ) {
   }
+
+  setPujantModel(what: boolean) {
+    this.pujantModelActual = what;
+    this.pujantModel.emit(this.pujantModelActual);
+  }
+
+  getPujantModelActual() : boolean{
+    return this.pujantModelActual;
+  }
+
+  getPujantModel() {
+    return this.pujantModel;
+  }
+
 
   getTest(): any {
     // @ts-ignore
@@ -44,6 +61,14 @@ export class MainService {
 
   getModels(): any {
     return this.http.get<any>(this.url + '/models/');
+  }
+
+    getSeleccionat(): any {
+    return this.http.get<any>(this.url + '/seleccionat/');
+  }
+
+  setSeleccionat(id : number){
+        return this.http.post<any>(this.url + '/seleccionat/'+id, null);
   }
 
   uploadFile(file: any) {

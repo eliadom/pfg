@@ -1,40 +1,43 @@
 <div class="mainContainer">
   <h1>Predicció de consum</h1>
-  result: {{result}}
-  <table mat-table [dataSource]="dataSource" matSort>
-    <ng-container matColumnDef="zona.nom">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Zona</th>
-      <td mat-cell *matCellDef="let prediccio" class="importantRow"> {{ prediccio.zona.nom }}</td>
-      </ng-container>
-        <ng-container matColumnDef="col1">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Columna1</th>
-      <td mat-cell *matCellDef="let prediccio">col1</td>
-      </ng-container>
-        <ng-container matColumnDef="col2">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Columna2</th>
-      <td mat-cell *matCellDef="let prediccio"> col2</td>
-      </ng-container>
-        <ng-container matColumnDef="valorPrevist">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Consum</th>
-      <td mat-cell *matCellDef="let prediccio"> {{ prediccio.valorPrevist }}</td>
-      </ng-container>
+  <div class="divSimple">
+    <div class="contenidorSuperior">
+      <div class="barraSlider">
+        <div>
+          1 dia
+        </div>
+        <mat-slider min="1" max="3" step="1" showTickMarks discrete>
+          <input matSliderThumb>
+        </mat-slider>
+        <div>
+          3 dies
+        </div>
+      </div>
+      <button mat-button class="botoDefault">Nova predicció</button>
+    </div>
 
-
-
-<!--      <tr>-->
-<!--        <th>Zona</th>-->
-<!--        <th>Columna 2</th>-->
-<!--        <th>Columna 3</th>-->
-<!--        <th>Consum previst</th>-->
-<!--      </tr>-->
-<!--      <tr *ngFor="let prediccio of prediccions">-->
-<!--        <td>{{ prediccio.zona.nom }}</td>-->
-<!--        <td>columna...</td>-->
-<!--        <td>columna2...</td>-->
-<!--        <td>{{ prediccio.valorPrevist }}</td>-->
-<!--      </tr>-->
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+    <div class="contenidorPrediccions">
+      <div class="colPrediccions">
+        <div class="col">
+          Dia
+        </div>
+        <div class="col">
+          Hora
+        </div>
+        <div class="col">
+          Consum previst
+        </div>
+      </div>
+      <div class="prediccionsOverflow">
+      <ng-container *ngFor="let _ of [].constructor(72)">
+        <div class="prediccions">
+          <div class="col">A</div>
+          <div class="col">A</div>
+          <div class="col">A</div>
+        </div>
+        <div class="divisor"></div>
+      </ng-container>
+        </div>
+    </div>
+  </div>
 </div>

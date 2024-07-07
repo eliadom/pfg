@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -14,6 +14,8 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {ModelsPassatsComponent} from "./passats/models-passats.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatSliderModule} from "@angular/material/slider";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [
@@ -22,19 +24,20 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     SettingsComponent,
     ModelsPassatsComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        MatIconModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatIconModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatSliderModule,
+    MatSnackBarModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

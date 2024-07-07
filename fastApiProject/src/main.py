@@ -12,11 +12,11 @@ from fastapi import Depends, FastAPI, HTTPException, UploadFile, File, Request, 
 from fastapi.middleware.cors import CORSMiddleware
 from rich import status
 from sqlalchemy.orm import Session
-
-
+from sqlalchemy.sql.functions import current_date
 
 from . import crud, models, schemas, training
 from .database import SessionLocal, engine
+from .models import Seleccionat
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -46,6 +46,15 @@ def read_models(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return models
 
 
+
+@app.get("/api/seleccionat", response_model=schemas.Seleccionat)
+def read_models(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    seleccionat = crud.get_seleccionat(db, skip=skip, limit=limit)
+    selec = None
+    if len(seleccionat) != 0:
+        selec = seleccionat[0]
+    return selec
+
 def save_model(db: Session):
     current_date = datetime.now()
     db_model = models.Model(dia=current_date)
@@ -53,6 +62,24 @@ def save_model(db: Session):
     db.commit()
     db.refresh(db_model)
     return db_model
+
+def save_seleccionat(db: Session, number : int):
+    listselec = crud.get_seleccionat(db)
+    if (len(listselec) > 0):
+        selec = listselec[0]
+        db.delete(selec)
+        db.commit()
+    db_model = models.Seleccionat(id=number)
+    db.add(db_model)
+    db.commit()
+    db.refresh(db_model)
+    return db_model
+
+
+@app.post("/api/seleccionat/{id}")
+def selecciona_nou(db: Session = Depends(get_db), id=0,  response_model=[schemas.Seleccionat]):
+    nouModel = save_seleccionat(db, id)
+    return nouModel
 
 
 @app.post("/api/models/")

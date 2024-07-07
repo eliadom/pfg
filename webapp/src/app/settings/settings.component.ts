@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {pipe} from "rxjs";
 import {MainService} from "../main-service/main.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-taula-prediccions',
@@ -12,13 +13,22 @@ export class SettingsComponent implements OnInit {
   fileName: string = null;
 
   constructor(
-    private mainService: MainService
+    private mainService: MainService,
+    private _snackBar: MatSnackBar
   ) {
   }
 
+  pujantModel : boolean = false;
   result: string = "";
 
   ngOnInit() {
+
+    this.pujantModel = this.mainService.getPujantModelActual();
+
+    this.mainService.getPujantModel().subscribe((what: boolean) => {
+      this.pujantModel = what;
+    })
+
     this.mainService.getTest().subscribe((test: any) => {
       this.result = test;
       console.log("service recibe:")
@@ -28,26 +38,20 @@ export class SettingsComponent implements OnInit {
 
 
   onFileSelected(event) {
-    console.log("SELECTED A FILE")
 
     const file: File = event.target.files[0];
 
     if (file) {
-      console.log("DETECTED FILE!!")
       this.chosenFile = true;
       this.fileName = file.name;
-
       const formData = new FormData();
-
       formData.append("thumbnail", file);
-
-      console.log("event:")
-      console.log(file)
-
-
-      this.mainService.uploadFile(file).subscribe((res : any) => {
-        console.log("done!")
-        console.log(res)
+      this.mainService.setPujantModel(true);
+      this.mainService.uploadFile(file).subscribe((res: any) => {
+        this.mainService.setPujantModel(false);
+        this._snackBar.open("Model penjat correctament!","OK",{
+          duration: 5000
+        });
       })
       // const upload$ = this.http.post("/api/thumbnail-upload", formData);
       // upload$.subscribe();

@@ -9,19 +9,39 @@ import {IAModel} from "../model/ia_mod/ia_mod";
 })
 export class ModelsPassatsComponent implements OnInit {
   title = 'webapp';
-  models : IAModel[];
-  loading : number = 0;
+  models: IAModel[];
+  loading: number = 0;
+
+  pujantModel: boolean = false;
+  seleccionat: number = -1;
 
   constructor(
-    private mainService : MainService
-  ){}
+    private mainService: MainService
+  ) {
+  }
+
   ngOnInit() {
+
+    this.pujantModel = this.mainService.getPujantModelActual();
+
+    this.mainService.getPujantModel().subscribe((what: boolean) => {
+      this.pujantModel = what;
+    })
+
     this.loading--;
-    this.mainService.getModels().subscribe((models : IAModel[]) => {
+    this.mainService.getModels().subscribe((models: IAModel[]) => {
       this.models = models;
       this.loading++;
     })
+
+    this.mainService.getSeleccionat().subscribe((resul: any) => {
+      this.seleccionat = resul.id;
+    })
   }
 
-
+  marcaSeleccionat(numb: number) {
+    this.mainService.setSeleccionat(numb).subscribe((resul: any) => {
+      this.seleccionat = resul.id;
+    });
+  }
 }

@@ -3,19 +3,29 @@
   <div class="entireDiv">
     <div class="divForPrompt">
 
-<input type="file" class="file-upload" (change)="onFileSelected($event)" #fileInput style="display: none" accept=".xlsx">
+      <input type="file" class="file-upload" (change)="onFileSelected($event)" #fileInput style="display: none"
+             accept=".xlsx">
       <div class="innerDiv">
         <mat-icon class="bigIcon">file_copy</mat-icon>
       </div>
       <div>
         Penja un arxiu <b>Excel (.xlsx)</b> per entrenar un nou model
       </div>
-      <button mat-button class="botoDefault" (click)="fileInput.click()">
+      <button mat-button class="botoDefault" (click)="fileInput.click()" [disabled]="pujantModel">
         Tria arxiu
       </button>
       <div *ngIf="chosenFile">
-        {{fileName}}
+        {{ fileName }}
       </div>
     </div>
+
+        <div class="contenidorSencer" *ngIf="pujantModel">
+          <mat-spinner
+          ></mat-spinner>
+          <div class="textGeneric centraText">
+           Espera mentre es processa el teu model...
+          </div>
+        </div>
+
   </div>
 </div>

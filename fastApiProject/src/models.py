@@ -20,6 +20,11 @@ class Model(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     dia = Column(DateTime, default=datetime.utcnow)
 
+class Seleccionat(Base):
+    __tablename__ = "seleccionat"
+
+    id = Column(Integer, primary_key=True)
+
 # class Item(Base):
 #     __tablename__ = "items"
 #
