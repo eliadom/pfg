@@ -108,7 +108,9 @@ def create_model(file: UploadFile = File(...),  db: Session = Depends(get_db)):
 
         # env2.processa_dades(novaRuta)
 
-        training.processa_dades(nouArxiu)
+        numDies = 7;
+
+        training.processa_dades(nouArxiu, numDies)
 
     else:
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)

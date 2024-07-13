@@ -63,7 +63,7 @@ def utf8_encode(x):
         return x
 
 
-def processa_dades(nomexcel):
+def processa_dades(nomexcel, numDies):
     scaler = MinMaxScaler()
     directoriActual = os.path.dirname(os.path.abspath(__file__))
     save_path = (os.path.join('model', nomexcel + ".xlsx"))
@@ -86,9 +86,12 @@ def processa_dades(nomexcel):
         readingDate = row['INF_Date']
         readingDate = readingDate[:-8]
         datetimeDate = datetime.strptime(readingDate, "%Y-%m-%d %H:%M:%S")
+        # newRow = {'Year': datetimeDate.year, 'Month': datetimeDate.month, 'Day': datetimeDate.day,
+        #           'Weekday': datetimeDate.weekday(),
+        #           'Hour': datetimeDate.hour, 'Minute': datetimeDate.minute, 'Value': row['INF_Value']}
         newRow = {'Year': datetimeDate.year, 'Month': datetimeDate.month, 'Day': datetimeDate.day,
                   'Weekday': datetimeDate.weekday(),
-                  'Hour': datetimeDate.hour, 'Minute': datetimeDate.minute, 'Value': row['INF_Value']}
+                  'Hour': datetimeDate,'Value': row['INF_Value']}
         importantData.loc[index] = newRow
         index += 1
 
@@ -97,67 +100,85 @@ def processa_dades(nomexcel):
 
     dataByHours = pd.DataFrame({'Year': [], 'Month': [], 'Day': [], 'Weekday': [], 'HourStart': [], 'Value': []})
 
+    previousRow = None
+
     while index < len(importantData):
-
-        lastRegisterFromHour = importantData.loc[index]
-
-        varYear = lastRegisterFromHour['Year']
-        varMonth = lastRegisterFromHour['Month']
-        varDay = lastRegisterFromHour['Day']
-        varWeekday = lastRegisterFromHour['Weekday']
-        varHour = lastRegisterFromHour['Hour']
-        varMinute = lastRegisterFromHour['Minute']
-        currentTime = str(int(varYear)) + '-' + str(int(varMonth)).zfill(2) + '-' + str(int(varDay)).zfill(
-            2) + " " + str(int(varHour)).zfill(2) + ':' + str(int(varMinute)).zfill(2)
-        currentRowDatetime = datetime.strptime(currentTime, "%Y-%m-%d %H:%M")
-        previousRowDatetime = currentRowDatetime - timedelta(hours=1)
-        nextRowDatetime = currentRowDatetime + timedelta(hours=1)
-
-        varYearPrev = previousRowDatetime.year
-        varMonthPrev = previousRowDatetime.month
-        varDayPrev = previousRowDatetime.day
-        varWeekdayPrev = previousRowDatetime.weekday()
-        varHourPrev = previousRowDatetime.hour
-        varMinutePrev = previousRowDatetime.minute
-
-        # intentem buscar un registre del qual faci exactament 1h
-        firstOfCurrentHour = importantData.loc[(importantData['Year'] == varYear) & (importantData['Month'] == varMonth)
-                                               & (importantData['Day'] == varDay) & (
-                                                           importantData['Hour'] == varHour)].tail(1)
-
-        firstOfPreviousHour = importantData.loc[
-            (importantData['Year'] == varYearPrev) & (importantData['Month'] == varMonthPrev)
-            & (importantData['Day'] == varDayPrev) & (importantData['Hour'] == varHourPrev)].tail(1)
-
-        multiplier = 1
-
-        # si no existeix, fem el calcul manualment
-        if (not (firstOfCurrentHour.empty) | firstOfPreviousHour.empty):
-            if (float(firstOfCurrentHour['Minute']) != float(firstOfPreviousHour['Minute'])):
-                # si no ha passat exactament 1h, farem els calculs manualment
-
-                minDiff = float(firstOfCurrentHour['Minute']) - float(firstOfPreviousHour['Minute'])
-                if (minDiff != 0):
-                    multiplier = (60 / minDiff)
-
-            valueCreated = (float(firstOfCurrentHour['Value']) - float(firstOfPreviousHour['Value'])) * multiplier
-            fullStringDate = str(int(varYearPrev)) + '-' + str(int(varMonthPrev)).zfill(2) + '-' + str(
-                int(varDayPrev)).zfill(2) + ' ' + str(int(firstOfPreviousHour['Hour'])).zfill(2) + ':' + str(
-                int(firstOfPreviousHour['Minute'])).zfill(2)
-            fullStringDate = datetime.strptime(fullStringDate, '%Y-%m-%d %H:%M')
-            newRow = {'Year': varYear, 'Month': varMonth, 'Day': varDay, 'Weekday': varWeekday,
-                      'HourStart': fullStringDate, 'Value': valueCreated}
-
-            dataByHours.loc[indexHours] = newRow
-            indexHours += 1
-            index += 1
-            nextRow = importantData.loc[index]
-            while ((index < len(importantData)) & (nextRow['Hour'] == varHour)):
-                index += 1
-                if ((index < len(importantData))):
-                    nextRow = importantData.loc[index]
+        if (previousRow != None):
+            valueDiff = float(previousRow['Value']) - float(importantData.loc[index]['Value'])
         else:
-            break;
+            valueDiff = float(importantData.loc[index]['Value'])
+
+        newRow = {'Year': importantData.loc[index]['Year'], 'Month': importantData.loc[index]['Month'], 'Day': importantData.loc[index]['Day'], 'Weekday': importantData.loc[index]['Weekday'],
+                      'HourStart': importantData.loc[index]['Hour'], 'Value': valueDiff}
+
+        if (previousRow != None):
+            dataByHours.loc[index] = newRow
+
+        newRow['Value'] = importantData.loc[index]['Value']
+        previousRow = newRow
+        index += 1
+
+
+
+        # lastRegisterFromHour = importantData.loc[index]
+        #
+        # varYear = lastRegisterFromHour['Year']
+        # varMonth = lastRegisterFromHour['Month']
+        # varDay = lastRegisterFromHour['Day']
+        # varWeekday = lastRegisterFromHour['Weekday']
+        # varHour = lastRegisterFromHour['Hour']
+        # varMinute = lastRegisterFromHour['Minute']
+        # currentTime = str(int(varYear)) + '-' + str(int(varMonth)).zfill(2) + '-' + str(int(varDay)).zfill(
+        #     2) + " " + str(int(varHour)).zfill(2) + ':' + str(int(varMinute)).zfill(2)
+        # currentRowDatetime = datetime.strptime(currentTime, "%Y-%m-%d %H:%M")
+        # previousRowDatetime = currentRowDatetime - timedelta(hours=1)
+        # nextRowDatetime = currentRowDatetime + timedelta(hours=1)
+        #
+        # varYearPrev = previousRowDatetime.year
+        # varMonthPrev = previousRowDatetime.month
+        # varDayPrev = previousRowDatetime.day
+        # varWeekdayPrev = previousRowDatetime.weekday()
+        # varHourPrev = previousRowDatetime.hour
+        # varMinutePrev = previousRowDatetime.minute
+        #
+        # # intentem buscar un registre del qual faci exactament 1h
+        # firstOfCurrentHour = importantData.loc[(importantData['Year'] == varYear) & (importantData['Month'] == varMonth)
+        #                                        & (importantData['Day'] == varDay) & (
+        #                                                    importantData['Hour'] == varHour)].tail(1)
+        #
+        # firstOfPreviousHour = importantData.loc[
+        #     (importantData['Year'] == varYearPrev) & (importantData['Month'] == varMonthPrev)
+        #     & (importantData['Day'] == varDayPrev) & (importantData['Hour'] == varHourPrev)].tail(1)
+        #
+        # multiplier = 1
+        #
+        # # si no existeix, fem el calcul manualment
+        # if (not (firstOfCurrentHour.empty) | firstOfPreviousHour.empty):
+        #     if (float(firstOfCurrentHour['Minute']) != float(firstOfPreviousHour['Minute'])):
+        #         # si no ha passat exactament 1h, farem els calculs manualment
+        #
+        #         minDiff = float(firstOfCurrentHour['Minute']) - float(firstOfPreviousHour['Minute'])
+        #         if (minDiff != 0):
+        #             multiplier = (60 / minDiff)
+        #
+        #     valueCreated = (float(firstOfCurrentHour['Value']) - float(firstOfPreviousHour['Value'])) * multiplier
+        #     fullStringDate = str(int(varYearPrev)) + '-' + str(int(varMonthPrev)).zfill(2) + '-' + str(
+        #         int(varDayPrev)).zfill(2) + ' ' + str(int(firstOfPreviousHour['Hour'])).zfill(2) + ':' + str(
+        #         int(firstOfPreviousHour['Minute'])).zfill(2)
+        #     fullStringDate = datetime.strptime(fullStringDate, '%Y-%m-%d %H:%M')
+        #     newRow = {'Year': varYear, 'Month': varMonth, 'Day': varDay, 'Weekday': varWeekday,
+        #               'HourStart': fullStringDate, 'Value': valueCreated}
+        #
+        #     dataByHours.loc[indexHours] = newRow
+        #     indexHours += 1
+        #     index += 1
+        #     nextRow = importantData.loc[index]
+        #     while ((index < len(importantData)) & (nextRow['Hour'] == varHour)):
+        #         index += 1
+        #         if ((index < len(importantData))):
+        #             nextRow = importantData.loc[index]
+        # else:
+        #     break;
 
     dataForModel = dataByHours
     dataForModel = dataForModel.loc[:, ['HourStart', 'Value']]
@@ -201,12 +222,12 @@ def processa_dades(nomexcel):
 
     lstm_model.compile(optimizer="adam", loss="MSE")
 
-    batch_size = 100
+    batch_size = 64
     # batch_size = 800
-    steps_per_epock = int(len(X_mostres) / batch_size)
+    steps_per_epoch = int(len(X_mostres) / batch_size) * 3
 
     # lstm_model.fit(X_mostres, y_mostres, epochs=700, batch_size=batch_size, steps_per_epoch=steps_per_epock, verbose=2)
-    lstm_model.fit(X_mostres, y_mostres, epochs=700, batch_size=batch_size, steps_per_epoch=steps_per_epock, verbose=2)
+    lstm_model.fit(X_mostres, y_mostres, epochs=15, batch_size=batch_size, steps_per_epoch=steps_per_epoch, verbose=2)
 
     print("model generated:")
     print(lstm_model.summary)
@@ -225,18 +246,30 @@ def processa_dades(nomexcel):
 
     N = 24800
 
-    numDies = 3;
 
     prediction = lstm_model.predict(X_mostres[-N:], verbose=2)
     prediction_copies = np.repeat(prediction, 6, axis=-1)
 
-    prediccio24h = prediction_copies[:24]
-
+    prediccio24h = prediction_copies[:0]
+    # prediccio24h = []
 
     for i in range(2, numDies):
         diaSeguent = lstm_model.predict(X_mostres[-N:], verbose=2)
-        prediction_copies = np.repeat(diaSeguent, 6, axis=-1)
+        n = len(diaSeguent)
+        i = 0
+        resul = []
+        while i < n:
+            if i + 2 < n:  # Verifica que existan al menos 3 elementos restantes
+                suma = diaSeguent[i] + diaSeguent[i + 1] + diaSeguent[i + 2]
+                resul.append(suma)
+                i += 3
+            else:  # Si no hay suficientes elementos para formar un grupo de 3, añade los elementos restantes
+                resul.extend(diaSeguent[i:])
+                break
+        prediction_copies = np.repeat(resul, 6, axis=-1)
         prediccio24h = np.concatenate((prediccio24h, prediction_copies[:24]))
+
+
 
 
 
