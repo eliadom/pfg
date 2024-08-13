@@ -29,11 +29,11 @@ export class SettingsComponent implements OnInit {
       this.pujantModel = what;
     })
 
-    this.mainService.getTest().subscribe((test: any) => {
-      this.result = test;
-      console.log("service recibe:")
-      console.log(this.result)
-    })
+    // this.mainService.getTest().subscribe((test: any) => {
+    //   this.result = test;
+    //   console.log("service recibe:")
+    //   console.log(this.result)
+    // })
   }
 
 

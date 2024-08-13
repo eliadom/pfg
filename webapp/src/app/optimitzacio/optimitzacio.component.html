@@ -1,0 +1,53 @@
+<ng-container>
+  <div class="mainContainer" *ngIf="loading === 0">
+    <h1>Optimització</h1>
+    <div class="divSimple">
+      <div *ngIf="!ultimaPrediccio">No s'ha trobat cap predicció recent.</div>
+      <div *ngIf="ultimaPrediccio" class="optimitzacioContainers">
+        <div class="headerDescarregaExcel">
+          <p>
+            Es farà una <b>optimizació d'aprovisionament</b> sobre la predicció feta el
+            dia {{ ultimaPrediccio.dia | date : 'dd/MM/yyyy' }} a les {{ ultimaPrediccio.dia | date : 'HH:mm ' }}
+          </p>
+          <button mat-button class="botoDefault" (click)="generaExcel()">
+            <mat-icon>download</mat-icon>
+            Descarrega Excel
+          </button>
+        </div>
+        <div>Introdueix els detalls sobre el dipòsit:</div>
+
+        <form [formGroup]="formGroup">
+          <div class="contenidorDetalls">
+            <div class="contenidorInput">
+              Capacitat màxima (L):
+              <mat-form-field appearance="outline">
+                <mat-label>L</mat-label>
+                <input type="number" matInput formControlName="capacitat">
+              </mat-form-field>
+            </div>
+
+            <div class="contenidorInput">
+              Consum elèctric per litre (kWh/L):
+              <mat-form-field appearance="outline">
+                <mat-label>kWh/L</mat-label>
+                <input type="number" matInput formControlName="consum">
+              </mat-form-field>
+            </div>
+
+            <div class="contenidorInput">
+              Bombeig màxim per minut (L/min):
+              <mat-form-field appearance="outline">
+                <mat-label>L/min</mat-label>
+                <input type="number" matInput formControlName="bombeig">
+              </mat-form-field>
+            </div>
+          </div>
+        </form>
+        <div class="botoGenerar">
+          <button mat-button class="botoDefault" (click)="enviaForm()">Genera optimització</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</ng-container>

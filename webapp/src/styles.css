@@ -48,6 +48,10 @@ h1 {
   height: calc(100% - 50px);
 }
 
+.hidden{
+  display: none;
+}
+
 .botoDefault {
   color: #F5E9E9 !important;
   background-color: #9cadde !important;

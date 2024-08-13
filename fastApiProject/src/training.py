@@ -19,7 +19,7 @@ os.environ['PYTHONIOENCODING'] = 'utf8'
 
 from keras.layers import Dense, Dropout, LSTM
 from keras.models import Sequential
-
+from keras.models import load_model
 
 def load_data(stock, seq_len):
 
@@ -61,6 +61,69 @@ def utf8_encode(x):
         return x.encode('utf-8').decode('utf-8')
     else:
         return x
+
+from keras.src.legacy.saving import legacy_h5_format
+
+def genera_prediccio(nomexcel, numDies):
+    # RESTAURACIO
+
+    directoriActual = os.path.dirname(os.path.abspath(__file__))
+    save_path = (os.path.join('model', nomexcel + ".h5"))
+    novaRuta = os.path.join(directoriActual, save_path)
+
+    # guardem model LSTM
+
+    # lstm_model = load_model(novaRuta , custom_objects={'MSE': 'mean_squared_error'})
+    lstm_model = legacy_h5_format.load_model_from_hdf5(novaRuta, custom_objects={'MSE': 'MSE'})
+
+
+    save_path_mostresX = (os.path.join('model', nomexcel + "Xmostres.npy"))
+    novaRutaMostresX = os.path.join(directoriActual, save_path_mostresX)
+
+    X_mostresREST = np.load(novaRutaMostresX)
+    X_mostresREST.flatten().reshape(-1, 1, 1)
+    print(X_mostresREST.shape)
+    print(X_mostresREST)
+
+    ## PREDICCIO --------------------
+
+    N = 24800
+
+    X_mostresPRED = X_mostresREST
+    prediction = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
+    prediction_copies = np.repeat(prediction, 6, axis=-1)
+
+    prediccio24h = prediction_copies[:0]
+    # prediccio24h = []
+
+    for i in range(2, numDies):
+        diaSeguent = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
+        n = len(diaSeguent)
+        i = 0
+        resul = []
+        while i < n:
+            if i + 2 < n:  # Verifica que existan al menos 3 elementos restantes
+                suma = diaSeguent[i] + diaSeguent[i + 1] + diaSeguent[i + 2]
+                resul.append(suma)
+                i += 3
+            else:  # Si no hay suficientes elementos para formar un grupo de 3, añade los elementos restantes
+                resul.extend(diaSeguent[i:])
+                break
+        prediction_copies = np.repeat(resul, 6, axis=-1)
+        prediccio24h = np.concatenate((prediccio24h, prediction_copies[:24]))
+
+    # predicted_consum = scaler.transform(prediction_copies)
+
+    plt.figure(figsize=(16, 4))
+    plt.plot(prediccio24h, alpha=0.7, color='orange', label='Consum predit')
+    plt.xlabel('Temps')
+    plt.ylabel('Consum d\'aigua')
+    plt.legend()
+    plt.show()
+
+    print("Predicted consum:")
+    print(prediccio24h)
+    return prediccio24h.tolist(), plt
 
 
 def processa_dades(nomexcel, numDies):
@@ -237,53 +300,73 @@ def processa_dades(nomexcel, numDies):
     save_path = (os.path.join('model', nomexcel + ".h5"))
     novaRuta = os.path.join(directoriActual, save_path)
 
+    # guardem model LSTM
     lstm_model.save(novaRuta)
 
-    ## PREDICCIO --------------------
+    # guardem x mostres i y mostres en un excel nou
 
-    primeres24h = X_mostres
-    resulPrimeres24h = y_mostres
+    X_mostresFLAT = pd.DataFrame(X_mostres.flatten())
+    save_path_mostresX = (os.path.join('model', nomexcel + "Xmostres.npy"))
+    novaRutaMostresX = os.path.join(directoriActual, save_path_mostresX)
 
-    N = 24800
+    np.save(novaRutaMostresX, X_mostresFLAT)
+    # np.save(novaRutaMostresY, y_mostresFLAT)
 
-
-    prediction = lstm_model.predict(X_mostres[-N:], verbose=2)
-    prediction_copies = np.repeat(prediction, 6, axis=-1)
-
-    prediccio24h = prediction_copies[:0]
-    # prediccio24h = []
-
-    for i in range(2, numDies):
-        diaSeguent = lstm_model.predict(X_mostres[-N:], verbose=2)
-        n = len(diaSeguent)
-        i = 0
-        resul = []
-        while i < n:
-            if i + 2 < n:  # Verifica que existan al menos 3 elementos restantes
-                suma = diaSeguent[i] + diaSeguent[i + 1] + diaSeguent[i + 2]
-                resul.append(suma)
-                i += 3
-            else:  # Si no hay suficientes elementos para formar un grupo de 3, añade los elementos restantes
-                resul.extend(diaSeguent[i:])
-                break
-        prediction_copies = np.repeat(resul, 6, axis=-1)
-        prediccio24h = np.concatenate((prediccio24h, prediction_copies[:24]))
-
-
-
-
-
-    # predicted_consum = scaler.transform(prediction_copies)
-
-    plt.figure(figsize=(16, 4))
-    plt.plot(prediccio24h, alpha=0.7, color='orange', label='Consum predit')
-    plt.xlabel('Temps')
-    plt.ylabel('Consum d\'aigua')
-    plt.legend()
-    plt.show()
-
-    print("Predicted consum:")
-    print(prediccio24h)
+    # # RESTAURACIO
+    #
+    # save_path_mostresX = (os.path.join('model', nomexcel + "Xmostres.npy"))
+    # novaRutaMostresX = os.path.join(directoriActual, save_path_mostresX)
+    #
+    #
+    # X_mostresREST = np.load(novaRutaMostresX)
+    # X_mostresREST.flatten().reshape(-1, 1, 1)
+    # print(X_mostresREST.shape)
+    # print(X_mostresREST)
+    #
+    # ## PREDICCIO --------------------
+    #
+    #
+    #
+    # N = 24800
+    #
+    # X_mostresPRED = X_mostresREST
+    # prediction = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
+    # prediction_copies = np.repeat(prediction, 6, axis=-1)
+    #
+    # prediccio24h = prediction_copies[:0]
+    # # prediccio24h = []
+    #
+    # for i in range(2, numDies):
+    #     diaSeguent = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
+    #     n = len(diaSeguent)
+    #     i = 0
+    #     resul = []
+    #     while i < n:
+    #         if i + 2 < n:  # Verifica que existan al menos 3 elementos restantes
+    #             suma = diaSeguent[i] + diaSeguent[i + 1] + diaSeguent[i + 2]
+    #             resul.append(suma)
+    #             i += 3
+    #         else:  # Si no hay suficientes elementos para formar un grupo de 3, añade los elementos restantes
+    #             resul.extend(diaSeguent[i:])
+    #             break
+    #     prediction_copies = np.repeat(resul, 6, axis=-1)
+    #     prediccio24h = np.concatenate((prediccio24h, prediction_copies[:24]))
+    #
+    #
+    #
+    #
+    #
+    # # predicted_consum = scaler.transform(prediction_copies)
+    #
+    # plt.figure(figsize=(16, 4))
+    # plt.plot(prediccio24h, alpha=0.7, color='orange', label='Consum predit')
+    # plt.xlabel('Temps')
+    # plt.ylabel('Consum d\'aigua')
+    # plt.legend()
+    # plt.show()
+    #
+    # print("Predicted consum:")
+    # print(prediccio24h)
 
     # Generem prediccio dels 3 propers dies:
     #

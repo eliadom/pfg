@@ -1,20 +1,37 @@
+
 <div class="mainContainer">
   <h1>Predicció de consum</h1>
   <div class="divSimple">
     <div class="contenidorSuperior">
+<!--      <img id="image" alt="Plot Image" [class.hidden]="!loadedImage">-->
       <div class="barraSlider">
         <div>
           1 dia
         </div>
-        <mat-slider min="1" max="3" step="1" showTickMarks discrete>
-          <input matSliderThumb>
+        <mat-slider min="1" max="15" step="1" showTickMarks discrete>
+          <input matSliderThumb [(value)]="sliderValue">
         </mat-slider>
         <div>
-          3 dies
+          15 dies
         </div>
       </div>
-      <button mat-button class="botoDefault">Nova predicció</button>
+      <button mat-button class="botoDefault" (click)="generaPrediccioDe()">Nova predicció</button>
+            <button mat-button class="botoDefault" (click)="generaExcel()">
+              <mat-icon>download</mat-icon>
+              Descarrega Excel</button>
+<!--      <canvas *ngIf="loadedImage"-->
     </div>
+    <div class="chart">
+<canvas *ngIf="loading === 0"
+ baseChart
+    [data]="lineChartData"
+    [options]="lineChartOptions"
+    [type]="lineChartType"
+    (chartHover)="chartHovered($event)"
+    (chartClick)="chartClicked($event)"
+></canvas>
+  </div>
+
 
     <div class="contenidorPrediccions">
       <div class="colPrediccions">
@@ -29,15 +46,15 @@
         </div>
       </div>
       <div class="prediccionsOverflow">
-      <ng-container *ngFor="let _ of [].constructor(72)">
-        <div class="prediccions">
-          <div class="col">A</div>
-          <div class="col">A</div>
-          <div class="col">A</div>
-        </div>
-        <div class="divisor"></div>
-      </ng-container>
-        </div>
+              <ng-container *ngFor="let prediccioIndiv of arrayData; let i = index">
+                <div class="prediccions">
+                  <div class="col">{{ arrayDiaIHora[i] | date: 'dd/MM/yyyy' }}</div>
+                  <div class="col">{{ arrayDiaIHora[i] |  date: 'HH:mm'}}</div>
+                  <div class="col">{{ prediccioIndiv }}</div>
+                </div>
+                <div class="divisor"></div>
+              </ng-container>
+      </div>
     </div>
   </div>
 </div>

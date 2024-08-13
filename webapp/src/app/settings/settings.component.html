@@ -18,14 +18,24 @@
         {{ fileName }}
       </div>
     </div>
+    <div class="recomanacions">
+      Recomanacions:
+      <ul>
+        <li>
+          Per a millors resultats, entrar històrics de, com a mínim, <b>24 hores</b>
+        </li>
 
-        <div class="contenidorSencer" *ngIf="pujantModel">
-          <mat-spinner
-          ></mat-spinner>
-          <div class="textGeneric centraText">
-           Espera mentre es processa el teu model...
-          </div>
-        </div>
+      </ul>
+    </div>
+
+
+    <div class="contenidorSencer" *ngIf="pujantModel">
+      <mat-spinner
+      ></mat-spinner>
+      <div class="textGeneric centraText">
+        Espera mentre es processa el teu model...
+      </div>
+    </div>
 
   </div>
 </div>

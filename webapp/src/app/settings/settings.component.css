@@ -25,3 +25,9 @@
   color: #9cadde;
 }
 
+.recomanacions {
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

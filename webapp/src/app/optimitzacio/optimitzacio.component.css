@@ -1,0 +1,47 @@
+
+.mainContainer{
+    font-family: "Inria Sans" !important;
+    font-size: 18px;
+}
+.divSimple {
+  background-color: #F5E9E9;
+  border-radius: 20px;
+  width: calc(100% - 32px);
+  height: calc(100% - 82px);
+  padding: 16px;
+
+}
+
+.optimitzacioContainers{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contenidorDetalls{
+  display: flex;
+  width: calc(100% - 128px);
+  gap: 16px;
+  justify-content: space-between;
+  padding: 64px;
+}
+
+.contenidorInput{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.botoGenerar{
+  width: 100%;
+  margin: 0 auto;
+  align-items: center !important;
+  text-align: center;
+
+}
+
+.headerDescarregaExcel{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}

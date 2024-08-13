@@ -6,6 +6,11 @@ from sqlalchemy import DECIMAL
 
 # for creating or reading data
 #############################################
+
+class DataIConsum(BaseModel):
+    data : datetime
+    consum : int
+
 class DadesBase(BaseModel):
     id: int
     prediccio: condecimal(decimal_places=4)

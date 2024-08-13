@@ -6,6 +6,7 @@ const headerDict = {
   'Content-Type': 'application/json',
   'Accept': 'application/json',
   'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Origin': '*'
 }
 
 const headerDictPost = {
@@ -43,7 +44,7 @@ export class MainService {
     this.pujantModel.emit(this.pujantModelActual);
   }
 
-  getPujantModelActual() : boolean{
+  getPujantModelActual(): boolean {
     return this.pujantModelActual;
   }
 
@@ -59,16 +60,29 @@ export class MainService {
     return this.http.get<any>(this.url, requestOptions);
   }
 
-  getModels(): any {
-    return this.http.get<any>(this.url + '/models/');
+  generaDeDies(dies: number): any {
+    return this.http.get<any>(this.url + '/prediccio/' + dies);
   }
 
-    getSeleccionat(): any {
+  generaExcel(array: any): any {
+    return this.http.post<any>(this.url + '/excel', array, { responseType: 'blob' as 'json' });
+  }
+
+
+  demanaPreu(): any {
+    return this.http.get<any>(this.url + '/getPreus');
+  }
+
+  getModels(): any {
+    return this.http.get<any>(this.url + '/models');
+  }
+
+  getSeleccionat(): any {
     return this.http.get<any>(this.url + '/seleccionat/');
   }
 
-  setSeleccionat(id : number){
-        return this.http.post<any>(this.url + '/seleccionat/'+id, null);
+  setSeleccionat(id: number) {
+    return this.http.post<any>(this.url + '/seleccionat/' + id, null);
   }
 
   uploadFile(file: any) {
@@ -78,5 +92,6 @@ export class MainService {
     console.log(formData)
     return this.http.post<any>(this.url + '/models/', formData);
   }
+
 
 }
