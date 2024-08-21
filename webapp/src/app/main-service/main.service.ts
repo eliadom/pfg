@@ -73,6 +73,15 @@ export class MainService {
     return this.http.get<any>(this.url + '/getPreus');
   }
 
+  optimitza(consumIData : any, capacitat : number, consum: number, bombeig: number){
+    return this.http.post<any>(this.url + '/optimitzacio', {
+      data_i_consum: consumIData,
+      capacitat: capacitat,
+      consum: consum,
+      bombeig: bombeig
+    }, { headers : headerDict});
+  }
+
   getModels(): any {
     return this.http.get<any>(this.url + '/models');
   }

@@ -4,12 +4,12 @@
     font-size: 18px;
 }
 .divSimple {
-  background-color: #F5E9E9;
+  background-color: white;
   border-radius: 20px;
   width: calc(100% - 32px);
   height: calc(100% - 82px);
   padding: 16px;
-
+  overflow: hidden;
 }
 
 .optimitzacioContainers{
@@ -44,4 +44,44 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+/* Contenidor amb la taula */
+.contenidorPrediccions {
+  background-color: #D2DDFA;
+  border-radius: 20px;
+  padding: 16px;
+  width: calc(100% - 32px);
+  height: calc(100% - 82px);
+}
+
+.colPrediccions {
+  background-color: #ADC5F4;
+  border-radius: 20px;
+  padding: 16px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.prediccions {
+  padding: 16px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.col{
+  text-align: center;
+  width: 100%;
+}
+
+.prediccionsOverflow{
+  height: calc(100% - 42px);
+  overflow: scroll;
+}
+
+.costTotalContainer{
+  width: 100%;
+  text-align: center;
 }

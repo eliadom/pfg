@@ -7,7 +7,7 @@
 .navbar{
   width: 370px;
   height: calc(100% - 34px);
-  background-color: #F5E9E9;
+  background-color: white;
   border-radius: 20px;
     margin: 16px;
   font-family: "Inria Sans";

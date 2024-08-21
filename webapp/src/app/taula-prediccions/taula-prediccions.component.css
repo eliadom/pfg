@@ -21,7 +21,7 @@ table {
 }
 
 .divSimple {
-  background-color: #F5E9E9;
+  background-color: white;
   border-radius: 20px;
   width: calc(100% - 32px);
   height: calc(100% - 82px);

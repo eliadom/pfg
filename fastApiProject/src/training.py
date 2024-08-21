@@ -64,8 +64,7 @@ def utf8_encode(x):
 
 from keras.src.legacy.saving import legacy_h5_format
 
-def genera_prediccio(nomexcel, numDies):
-    # RESTAURACIO
+def genera_prediccio(nomexcel, numDies, horaInicial):
 
     directoriActual = os.path.dirname(os.path.abspath(__file__))
     save_path = (os.path.join('model', nomexcel + ".h5"))
@@ -96,7 +95,7 @@ def genera_prediccio(nomexcel, numDies):
     prediccio24h = prediction_copies[:0]
     # prediccio24h = []
 
-    for i in range(2, numDies):
+    for i in range(1, numDies+1):
         diaSeguent = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
         n = len(diaSeguent)
         i = 0
@@ -114,6 +113,8 @@ def genera_prediccio(nomexcel, numDies):
 
     # predicted_consum = scaler.transform(prediction_copies)
 
+    prediccio24h = prediccio24h[horaInicial:]
+
     plt.figure(figsize=(16, 4))
     plt.plot(prediccio24h, alpha=0.7, color='orange', label='Consum predit')
     plt.xlabel('Temps')
@@ -126,8 +127,8 @@ def genera_prediccio(nomexcel, numDies):
     return prediccio24h.tolist(), plt
 
 
-def processa_dades(nomexcel, numDies):
-    scaler = MinMaxScaler()
+def processa_dades(nomexcel):
+
     directoriActual = os.path.dirname(os.path.abspath(__file__))
     save_path = (os.path.join('model', nomexcel + ".xlsx"))
     novaRuta = os.path.join(directoriActual, save_path)
@@ -136,9 +137,8 @@ def processa_dades(nomexcel, numDies):
 
     try:
         df = df.applymap(utf8_encode)
-        print("df is UTF-8, length %d bytes" % len(df))
     except UnicodeError:
-        print("df is not UTF-8")
+        print("df no es UTF-8")
 
     index = 0
     importantData = pd.DataFrame(
@@ -149,9 +149,6 @@ def processa_dades(nomexcel, numDies):
         readingDate = row['INF_Date']
         readingDate = readingDate[:-8]
         datetimeDate = datetime.strptime(readingDate, "%Y-%m-%d %H:%M:%S")
-        # newRow = {'Year': datetimeDate.year, 'Month': datetimeDate.month, 'Day': datetimeDate.day,
-        #           'Weekday': datetimeDate.weekday(),
-        #           'Hour': datetimeDate.hour, 'Minute': datetimeDate.minute, 'Value': row['INF_Value']}
         newRow = {'Year': datetimeDate.year, 'Month': datetimeDate.month, 'Day': datetimeDate.day,
                   'Weekday': datetimeDate.weekday(),
                   'Hour': datetimeDate,'Value': row['INF_Value']}
@@ -182,67 +179,6 @@ def processa_dades(nomexcel, numDies):
         index += 1
 
 
-
-        # lastRegisterFromHour = importantData.loc[index]
-        #
-        # varYear = lastRegisterFromHour['Year']
-        # varMonth = lastRegisterFromHour['Month']
-        # varDay = lastRegisterFromHour['Day']
-        # varWeekday = lastRegisterFromHour['Weekday']
-        # varHour = lastRegisterFromHour['Hour']
-        # varMinute = lastRegisterFromHour['Minute']
-        # currentTime = str(int(varYear)) + '-' + str(int(varMonth)).zfill(2) + '-' + str(int(varDay)).zfill(
-        #     2) + " " + str(int(varHour)).zfill(2) + ':' + str(int(varMinute)).zfill(2)
-        # currentRowDatetime = datetime.strptime(currentTime, "%Y-%m-%d %H:%M")
-        # previousRowDatetime = currentRowDatetime - timedelta(hours=1)
-        # nextRowDatetime = currentRowDatetime + timedelta(hours=1)
-        #
-        # varYearPrev = previousRowDatetime.year
-        # varMonthPrev = previousRowDatetime.month
-        # varDayPrev = previousRowDatetime.day
-        # varWeekdayPrev = previousRowDatetime.weekday()
-        # varHourPrev = previousRowDatetime.hour
-        # varMinutePrev = previousRowDatetime.minute
-        #
-        # # intentem buscar un registre del qual faci exactament 1h
-        # firstOfCurrentHour = importantData.loc[(importantData['Year'] == varYear) & (importantData['Month'] == varMonth)
-        #                                        & (importantData['Day'] == varDay) & (
-        #                                                    importantData['Hour'] == varHour)].tail(1)
-        #
-        # firstOfPreviousHour = importantData.loc[
-        #     (importantData['Year'] == varYearPrev) & (importantData['Month'] == varMonthPrev)
-        #     & (importantData['Day'] == varDayPrev) & (importantData['Hour'] == varHourPrev)].tail(1)
-        #
-        # multiplier = 1
-        #
-        # # si no existeix, fem el calcul manualment
-        # if (not (firstOfCurrentHour.empty) | firstOfPreviousHour.empty):
-        #     if (float(firstOfCurrentHour['Minute']) != float(firstOfPreviousHour['Minute'])):
-        #         # si no ha passat exactament 1h, farem els calculs manualment
-        #
-        #         minDiff = float(firstOfCurrentHour['Minute']) - float(firstOfPreviousHour['Minute'])
-        #         if (minDiff != 0):
-        #             multiplier = (60 / minDiff)
-        #
-        #     valueCreated = (float(firstOfCurrentHour['Value']) - float(firstOfPreviousHour['Value'])) * multiplier
-        #     fullStringDate = str(int(varYearPrev)) + '-' + str(int(varMonthPrev)).zfill(2) + '-' + str(
-        #         int(varDayPrev)).zfill(2) + ' ' + str(int(firstOfPreviousHour['Hour'])).zfill(2) + ':' + str(
-        #         int(firstOfPreviousHour['Minute'])).zfill(2)
-        #     fullStringDate = datetime.strptime(fullStringDate, '%Y-%m-%d %H:%M')
-        #     newRow = {'Year': varYear, 'Month': varMonth, 'Day': varDay, 'Weekday': varWeekday,
-        #               'HourStart': fullStringDate, 'Value': valueCreated}
-        #
-        #     dataByHours.loc[indexHours] = newRow
-        #     indexHours += 1
-        #     index += 1
-        #     nextRow = importantData.loc[index]
-        #     while ((index < len(importantData)) & (nextRow['Hour'] == varHour)):
-        #         index += 1
-        #         if ((index < len(importantData))):
-        #             nextRow = importantData.loc[index]
-        # else:
-        #     break;
-
     dataForModel = dataByHours
     dataForModel = dataForModel.loc[:, ['HourStart', 'Value']]
     dataForModel = dataForModel.set_index('HourStart')
@@ -258,15 +194,11 @@ def processa_dades(nomexcel, numDies):
 
     seq_len = -1
 
-    print("dataForModel:")
-    print(dataForModel)
+
+    scaler = MinMaxScaler()
 
     scaler.fit_transform(dataForModel)
     X_mostres, y_mostres, = load_data(dataForModel, seq_len)
-    print("x mostres::")
-    print(X_mostres)
-    print("y mostres::")
-    print(y_mostres)
 
     lstm_model = Sequential()
 
@@ -286,15 +218,9 @@ def processa_dades(nomexcel, numDies):
     lstm_model.compile(optimizer="adam", loss="MSE")
 
     batch_size = 64
-    # batch_size = 800
     steps_per_epoch = int(len(X_mostres) / batch_size) * 3
 
-    # lstm_model.fit(X_mostres, y_mostres, epochs=700, batch_size=batch_size, steps_per_epoch=steps_per_epock, verbose=2)
     lstm_model.fit(X_mostres, y_mostres, epochs=15, batch_size=batch_size, steps_per_epoch=steps_per_epoch, verbose=2)
-
-    print("model generated:")
-    print(lstm_model.summary)
-    print("guardant model...")
 
     directoriActual = os.path.dirname(os.path.abspath(__file__))
     save_path = (os.path.join('model', nomexcel + ".h5"))
@@ -310,98 +236,4 @@ def processa_dades(nomexcel, numDies):
     novaRutaMostresX = os.path.join(directoriActual, save_path_mostresX)
 
     np.save(novaRutaMostresX, X_mostresFLAT)
-    # np.save(novaRutaMostresY, y_mostresFLAT)
-
-    # # RESTAURACIO
-    #
-    # save_path_mostresX = (os.path.join('model', nomexcel + "Xmostres.npy"))
-    # novaRutaMostresX = os.path.join(directoriActual, save_path_mostresX)
-    #
-    #
-    # X_mostresREST = np.load(novaRutaMostresX)
-    # X_mostresREST.flatten().reshape(-1, 1, 1)
-    # print(X_mostresREST.shape)
-    # print(X_mostresREST)
-    #
-    # ## PREDICCIO --------------------
-    #
-    #
-    #
-    # N = 24800
-    #
-    # X_mostresPRED = X_mostresREST
-    # prediction = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
-    # prediction_copies = np.repeat(prediction, 6, axis=-1)
-    #
-    # prediccio24h = prediction_copies[:0]
-    # # prediccio24h = []
-    #
-    # for i in range(2, numDies):
-    #     diaSeguent = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
-    #     n = len(diaSeguent)
-    #     i = 0
-    #     resul = []
-    #     while i < n:
-    #         if i + 2 < n:  # Verifica que existan al menos 3 elementos restantes
-    #             suma = diaSeguent[i] + diaSeguent[i + 1] + diaSeguent[i + 2]
-    #             resul.append(suma)
-    #             i += 3
-    #         else:  # Si no hay suficientes elementos para formar un grupo de 3, añade los elementos restantes
-    #             resul.extend(diaSeguent[i:])
-    #             break
-    #     prediction_copies = np.repeat(resul, 6, axis=-1)
-    #     prediccio24h = np.concatenate((prediccio24h, prediction_copies[:24]))
-    #
-    #
-    #
-    #
-    #
-    # # predicted_consum = scaler.transform(prediction_copies)
-    #
-    # plt.figure(figsize=(16, 4))
-    # plt.plot(prediccio24h, alpha=0.7, color='orange', label='Consum predit')
-    # plt.xlabel('Temps')
-    # plt.ylabel('Consum d\'aigua')
-    # plt.legend()
-    # plt.show()
-    #
-    # print("Predicted consum:")
-    # print(prediccio24h)
-
-    # Generem prediccio dels 3 propers dies:
-    #
-    # Primerament, generem les properes 24h.
-
-    # lstm_predictions = lstm_model.predict(X_mostres, verbose=2)
-    # print(lstm_predictions)
-
-# no les primeres 24h
-#     lstm_predictions = lstm_model.predict(X_mostres[-N:], verbose=2)
-#
-#     lstm_score = r2_score(X_mostres, lstm_predictions)
-#     print("R^2 Score of LSTM model = ",lstm_score)
-#     plot_predictions(y_mostres, lstm_predictions, "Predictions fetes pel model LSTM")
-#     print("LSTM predictions:")
-#     print(lstm_predictions)
-
-# funcio per preparar els 3 seguents dies
-# def prepara_prediccions(stock):
-#   X_mostres = []
-#
-#   print("showing stock")
-#   print(stock)
-#
-#   seq_len = 1
-#
-#   stock1 = stock
-#
-#
-#
-#   for i in range(seq_len, len(stock1)):
-#     X_mostres.append(stock1.iloc[i-seq_len : i, 0])
-#
-#
-#   X_mostres = np.array(X_mostres)
-#
-#   X_mostres = np.reshape(X_mostres,(len(X_mostres), seq_len, 1))
-#   return X_mostres
+    return importantData['Hour'][0].hour

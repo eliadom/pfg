@@ -29,12 +29,7 @@ app = FastAPI()
 import requests
 from fastapi.responses import FileResponse
 
-
-@app.get('/api/getPreus')
-def first_user():
-    api_url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB"
-    all_users = requests.get(api_url).json()
-    return all_users
+import pulp
 
 
 def get_db():
@@ -48,10 +43,69 @@ def get_db():
 origins = ["*"]
 
 
-@app.get("/api/dades/", response_model=list[schemas.Dades])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    dades = crud.get_dades(db, skip=skip, limit=limit)
-    return dades
+@app.get('/api/getPreus')
+def get_preus():
+    api_url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB"
+    preus = requests.get(api_url).json()
+    return preus
+
+
+@app.post("/api/optimitzacio")
+def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
+    # Calcular el máximo de litros que se pueden bombear por hora
+
+    # Crear el problema de optimización
+    problema = pulp.LpProblem("Minimizar_Costo_Electricidad", pulp.LpMinimize)
+
+    # El preu ens ve donat en euros/MWh
+    preuElectricitat = get_preus()
+    prepara = list(preuElectricitat.items())
+
+    # Passem el consum entrat a MWh
+    data_model.consum = data_model.consum / 1000;
+    data_model.bombeig = data_model.bombeig * 60;
+
+    # Variables de decisión
+    B = pulp.LpVariable.dicts("Bombeo", range(24), lowBound=0, upBound=data_model.bombeig, cat='Continuous')
+    S = pulp.LpVariable.dicts("Almacenamiento", range(24), lowBound=0, upBound=data_model.capacitat, cat='Continuous')
+
+    # Volumen inicial
+    S[-1] = 50  # Partirem de 50L inicials
+
+    # Función objetivo
+    problema += pulp.lpSum(prepara[t][1]['price'] * B[t] * data_model.consum for t in range(24))
+
+    # Restricciones
+    for t in range(24):
+        if t == 0:
+            problema += S[t] == S[-1] + B[t] - data_model.data_i_consum[t].consum
+        else:
+            problema += S[t] == S[t - 1] + B[t] - data_model.data_i_consum[t].consum
+        problema += S[t] <= data_model.capacitat
+        problema += S[t] >= data_model.data_i_consum[t].consum
+        problema += B[t] <= data_model.bombeig  # Restricción de bombeo máximo por hora
+
+    # Resolver el problema
+    problema.solve()
+
+    # for t in range(24):
+
+    # Resultados
+    print("Estado de optimización:", pulp.LpStatus[problema.status])
+    print("Costo total de electricidad: $", pulp.value(problema.objective))
+    novaLlista = []
+    for t in range(24):
+        print(f"Hora {t}: Bombeo = {B[t].varValue:.2f} litros, Almacenamiento = {S[t].varValue:.2f} litros")
+        entrada = {
+            'hora': t,
+            'bombeig': B[t].varValue,
+            'capacitat': S[t].varValue
+        }
+        novaLlista.append(entrada)
+    return JSONResponse(content={"llista" : novaLlista, "total":round(pulp.value(problema.objective),2)})
+
+
+
 
 
 @app.post("/api/excel")
@@ -85,7 +139,8 @@ def genera_nova(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), 
     if len(seleccionat) != 0:
         selec = seleccionat[0]
 
-    resultat, plt = training.genera_prediccio(str(selec.id), int(dies))
+    horaInicial = 0
+    resultat, plt = training.genera_prediccio(str(selec.id), int(dies), horaInicial)
 
     fig, ax = plt.subplots()
     ax.plot(resultat, marker='o')
@@ -143,33 +198,16 @@ def selecciona_nou(db: Session = Depends(get_db), id=0, response_model=[schemas.
 
 @app.post("/api/models/")
 def create_model(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    print(file)
     if file.filename.endswith('.xlsx'):
-        # directoriActual = os.path.dirname(os.path.abspath(__file__))
-        # path = 'env2'
-        # arxiu = 'training.py'
-        # rootFolder =  os.path.join(directoriActual, path)
-        # environ =  os.path.join(rootFolder, 'Scripts')
-        # environ =  os.path.join(environ, 'python')
-        # novaRuta = os.path.join(rootFolder, arxiu)
         nouModel = save_model(db)
         novaId = nouModel.id
         nouArxiu = guardaArxiu(file, novaId)
 
-        # nouEntorn = {
-        #     "PATH":rootFolder
-        # }
-        #
-        # args = [environ, novaRuta, nouArxiu]
-        # subprocess.Popen(args).communicate()
-        # subprocess.run(args)
-        # args.wait()
-
-        # env2.processa_dades(novaRuta)
-
-        numDies = 7;
-
-        training.processa_dades(nouArxiu, numDies)
+        horainici = training.processa_dades(nouArxiu)
+        nouModel = db.query(models.Model).filter_by(id=nouModel.id).first()
+        nouModel.horainici = horainici
+        db.commit()
+        db.refresh(nouModel)
 
     else:
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel, condecimal
 from sqlalchemy import DECIMAL
@@ -8,8 +9,22 @@ from sqlalchemy import DECIMAL
 #############################################
 
 class DataIConsum(BaseModel):
-    data : datetime
-    consum : int
+    data: datetime
+    consum: int
+
+
+class InfoPerOptimitzar(BaseModel):
+    data_i_consum: List[DataIConsum]
+    capacitat: float
+    consum: float
+    bombeig: float
+
+class ResultatOptimitzacio(BaseModel):
+    hora: int
+    bombeig : float
+    capacitat: float
+    consumit: float
+
 
 class DadesBase(BaseModel):
     id: int
@@ -34,7 +49,7 @@ class Dades(DadesBase):
 class ModelBase(BaseModel):
     id: int
     dia: datetime
-
+    horainici: int
 
 # inherit from dades base + additional attrib
 class ModelCreate(ModelBase):
@@ -45,9 +60,11 @@ class ModelCreate(ModelBase):
 class Model(ModelBase):
     id: int
     dia: datetime
+    horainici: int
 
     class Config:
         from_attributes = True
+
 
 #############################################
 class SeleccionatBase(BaseModel):

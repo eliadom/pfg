@@ -29,7 +29,9 @@ export class ModelsPassatsComponent implements OnInit {
     })
 
     this.loading--;
-    this.mainService.getModels().subscribe((models: IAModel[]) => {
+    this.mainService.getModels().subscribe((models) => {
+      console.log("rebut:")
+      console.log(models)
       this.models = models;
       this.loading++;
     })

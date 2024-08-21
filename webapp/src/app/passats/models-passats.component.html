@@ -9,6 +9,11 @@
         <div class="columnaModel">
           {{ model.dia | date: 'dd/MM/yyyy HH:mm' }}
         </div>
+
+                <div class="columnaModel">
+          Presa a les {{ model.horainici }}h
+        </div>
+
         <div class="columnaModel">
           <div class="columnaModel">
             <div class="reestablirBoto" (click)="marcaSeleccionat(model.id)">

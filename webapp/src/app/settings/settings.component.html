@@ -27,7 +27,9 @@
 
       </ul>
     </div>
-
+      <div *ngIf="chosenFile && !pujantModel">
+        Model penjat! Recorda seleccionar-lo abans de fer prediccions.
+      </div>
 
     <div class="contenidorSencer" *ngIf="pujantModel">
       <mat-spinner

@@ -14,6 +14,7 @@ export class OptimitzacioComponent implements OnInit {
 
   loading: number = 0;
   formGroup: FormGroup;
+  costTotal : number;
 
 
   constructor(
@@ -28,21 +29,24 @@ export class OptimitzacioComponent implements OnInit {
     })
   }
 
+  prediccioFeta : boolean = false;
+  optimitzacioRebuda : any;
+
   preus = []
 
-  retornaPreus() {
-    this.mainService.demanaPreu().subscribe((preus: any) => {
-      console.log("preus:")
-      console.log(preus)
-      this.preus = preus;
-    })
-  }
+  // retornaPreus() {
+  //   this.mainService.demanaPreu().subscribe((preus: any) => {
+  //     console.log("preus:")
+  //     console.log(preus)
+  //     this.preus = preus;
+  //   })
+  // }
 
   ultimaPrediccio: { data: any, dia: Date }
 
   ngOnInit() {
-    this.retornaPreus()
     this.ultimaPrediccio = this.localStorageService.getLastPrediction();
+    console.log(this.ultimaPrediccio)
   }
 
   generaExcel() {
@@ -54,11 +58,19 @@ export class OptimitzacioComponent implements OnInit {
     })
   }
 
+  capacitatTotal : number = 1;
   enviaForm() {
     this.formGroup.markAllAsTouched();
-    console.log(this.formGroup.value)
     if (this.formGroup.valid) {
-      // envia info a backend i fes optimitzacio...
+      this.capacitatTotal = this.formGroup.get("capacitat").value;
+      this.mainService.optimitza(this.ultimaPrediccio.data,
+        this.formGroup.get("capacitat").value,
+        this.formGroup.get("consum").value,
+        this.formGroup.get("bombeig").value).subscribe((optimitzacio : any) => {
+        this.prediccioFeta = true;
+        this.optimitzacioRebuda = optimitzacio.llista
+        this.costTotal = optimitzacio.total
+      })
     }
 
   }
