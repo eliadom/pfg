@@ -9,8 +9,13 @@ from sqlalchemy import DECIMAL
 #############################################
 
 class DataIConsum(BaseModel):
-    data: datetime
+    data: str
     consum: int
+
+class DataOptimitzacio(BaseModel):
+    bombeig: int
+    capacitat: int
+    hora: int
 
 
 class InfoPerOptimitzar(BaseModel):

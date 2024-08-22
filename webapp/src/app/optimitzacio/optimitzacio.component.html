@@ -49,38 +49,44 @@
 
       </div>
       <ng-container *ngIf="ultimaPrediccio && prediccioFeta">
-        <div class="costTotalContainer">Cost total: {{costTotal}}€</div>
-            <div class="contenidorPrediccions">
-      <div class="colPrediccions">
-        <div class="col">
-          Hora
+        <div style="display: flex">
+          <div class="costTotalContainer">Cost total: {{ costTotal }}€</div>
+          <button mat-button class="botoDefault" (click)="generaExcelOptim()">
+            <mat-icon>download</mat-icon>
+            Descarrega Excel
+          </button>
         </div>
-        <div class="col">
-          Bombeig durant l'hora (L)
+        <div class="contenidorPrediccions">
+          <div class="colPrediccions">
+            <div class="col">
+              Hora
+            </div>
+            <div class="col">
+              Bombeig durant hora (L)
+            </div>
+            <div class="col">
+              Consum previst (L)
+            </div>
+            <div class="col">
+              Estat del dipòsit (L)
+            </div>
+            <div class="col">
+              Estat del dipòsit (%)
+            </div>
+          </div>
+          <div class="prediccionsOverflow">
+            <ng-container *ngFor="let prediccioIndiv of optimitzacioRebuda; let i = index">
+              <div class="prediccions">
+                <div class="col">{{ optimitzacioRebuda[i].hora }}</div>
+                <div class="col">{{ optimitzacioRebuda[i].bombeig }}</div>
+                <div class="col">{{ ultimaPrediccio.data[i].consum }}L</div>
+                <div class="col">{{ optimitzacioRebuda[i].capacitat }}L</div>
+                <div class="col">{{ (optimitzacioRebuda[i].capacitat / capacitatTotal) * 100 }}%</div>
+              </div>
+              <div class="divisor"></div>
+            </ng-container>
+          </div>
         </div>
-                <div class="col">
-          Consum previst (L)
-        </div>
-        <div class="col">
-          Estat del dipòsit (L)
-        </div>
-                <div class="col">
-          Estat del dipòsit (%)
-        </div>
-      </div>
-      <div class="prediccionsOverflow">
-              <ng-container *ngFor="let prediccioIndiv of optimitzacioRebuda; let i = index">
-                <div class="prediccions">
-                  <div class="col">{{ optimitzacioRebuda[i].hora }}</div>
-                  <div class="col">{{ optimitzacioRebuda[i].bombeig}}</div>
-                  <div class="col">{{ ultimaPrediccio.data[i].consum }}L</div>
-                  <div class="col">{{ optimitzacioRebuda[i].capacitat }}L</div>
-                  <div class="col">{{ (optimitzacioRebuda[i].capacitat / capacitatTotal) * 100 }}%</div>
-                </div>
-                <div class="divisor"></div>
-              </ng-container>
-      </div>
-    </div>
 
       </ng-container>
     </div>

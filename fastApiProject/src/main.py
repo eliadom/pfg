@@ -52,31 +52,34 @@ def get_preus():
 
 @app.post("/api/optimitzacio")
 def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
-    # Calcular el máximo de litros que se pueden bombear por hora
 
-    # Crear el problema de optimización
-    problema = pulp.LpProblem("Minimizar_Costo_Electricidad", pulp.LpMinimize)
+    # Creació del problema
+    problema = pulp.LpProblem("min_cost_consum", pulp.LpMinimize)
 
     # El preu ens ve donat en euros/MWh
     preuElectricitat = get_preus()
-    prepara = list(preuElectricitat.items())
+    preus_preparats = list(preuElectricitat.items())
 
     # Passem el consum entrat a MWh
     data_model.consum = data_model.consum / 1000;
     data_model.bombeig = data_model.bombeig * 60;
 
-    # Variables de decisión
-    B = pulp.LpVariable.dicts("Bombeo", range(24), lowBound=0, upBound=data_model.bombeig, cat='Continuous')
-    S = pulp.LpVariable.dicts("Almacenamiento", range(24), lowBound=0, upBound=data_model.capacitat, cat='Continuous')
+    hores = len(data_model.data_i_consum)
+    while len(preus_preparats) < len(data_model.data_i_consum):
+        preus_preparats += preus_preparats  # Duplica la lista `a`
 
-    # Volumen inicial
+    # Variables de decisió
+    B = pulp.LpVariable.dicts("Bombeo", range(hores), lowBound=0, upBound=data_model.bombeig, cat='Continuous')
+    S = pulp.LpVariable.dicts("Almacenamiento", range(hores), lowBound=0, upBound=data_model.capacitat, cat='Continuous')
+
     S[-1] = 50  # Partirem de 50L inicials
 
-    # Función objetivo
-    problema += pulp.lpSum(prepara[t][1]['price'] * B[t] * data_model.consum for t in range(24))
+    # Funció objectiu
+    problema += pulp.lpSum(preus_preparats[t][1]['price'] * B[t] * data_model.consum for t in range(hores))
 
     # Restricciones
-    for t in range(24):
+    for t in range(hores):
+        print(t)
         if t == 0:
             problema += S[t] == S[-1] + B[t] - data_model.data_i_consum[t].consum
         else:
@@ -88,13 +91,11 @@ def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
     # Resolver el problema
     problema.solve()
 
-    # for t in range(24):
-
     # Resultados
     print("Estado de optimización:", pulp.LpStatus[problema.status])
     print("Costo total de electricidad: $", pulp.value(problema.objective))
     novaLlista = []
-    for t in range(24):
+    for t in range(hores):
         print(f"Hora {t}: Bombeo = {B[t].varValue:.2f} litros, Almacenamiento = {S[t].varValue:.2f} litros")
         entrada = {
             'hora': t,
@@ -107,7 +108,22 @@ def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
 
 
 
+@app.post("/api/excel_optimitzacio")
+async def create_excel(data_model: List[schemas.DataOptimitzacio]):
+    # conversio a dataframe de pandas
+    data = [item.dict() for item in data_model]
+    df = pd.DataFrame(data)
 
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    # Preparem buffer a l'inici del document
+    output.seek(0)
+
+    # Retornem l'arxiu gravat sense haver-lo guardat al servidor
+    return StreamingResponse(output, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                             headers={"Content-Disposition": "attachment; filename=data.xlsx"})
 @app.post("/api/excel")
 async def create_excel(data_model: List[schemas.DataIConsum]):
     # conversio a dataframe de pandas
@@ -139,7 +155,9 @@ def genera_nova(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), 
     if len(seleccionat) != 0:
         selec = seleccionat[0]
 
-    horaInicial = 0
+    modelSeleccionat = db.query(models.Model).filter_by(id=selec.id).first()
+    horaInicial = modelSeleccionat.horainici
+
     resultat, plt = training.genera_prediccio(str(selec.id), int(dies), horaInicial)
 
     fig, ax = plt.subplots()

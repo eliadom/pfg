@@ -5,7 +5,7 @@ import {PrediccioModel} from "../model/prediccio/prediccio";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
-import { saveAs } from 'file-saver';
+import {saveAs} from 'file-saver';
 import {LocalStorageService} from "../local-service/main.service";
 
 
@@ -22,7 +22,7 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
   constructor(
     private mainService: MainService,
     private _liveAnnouncer: LiveAnnouncer,
-    private localStorageService : LocalStorageService
+    private localStorageService: LocalStorageService
   ) {
   }
 
@@ -61,25 +61,36 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
   imagePath;
 
   arrayData: number[] = [];
-  arrayWithDate : consumIData[] = [];
+  arrayWithDate: consumIData[] = [];
 
   generaExcel() {
     this.loading--;
     this.mainService.generaExcel(this.arrayWithDate).subscribe((response: Blob) => {
-       const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        saveAs(blob, 'prediccio.xlsx');
+      const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      saveAs(blob, 'prediccio.xlsx');
       this.loading++;
     })
   }
 
   generaPrediccioDe() {
 
-    let dateNow: Date = new Date();
+    this.arrayDiaIHora = [];
+    this.arrayWithDate = [];
+    this.arrayData = [];
+
+    let tomorrow: Date = new Date();
+    // tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow = new Date(tomorrow)
+    tomorrow.setHours(23, 0, 0, 0);
+    tomorrow = new Date(tomorrow)
+    console.log("tomorrow:")
+    console.log(tomorrow.getDate())
+
     for (let i = 0; i < this.sliderValue; i++) {
       for (let j = 0; j < 24; j++) {
-        dateNow.setTime(dateNow.getTime() + (1 * 60 * 60 * 1000));
-        dateNow = new Date(dateNow)
-        this.arrayDiaIHora.push(dateNow);
+        tomorrow.setTime(tomorrow.getTime() + (1 * 60 * 60 * 1000));
+        this.arrayDiaIHora.push(tomorrow);
+        tomorrow = new Date(tomorrow)
       }
     }
 
@@ -96,19 +107,15 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
         let numberAgain: number = Number(retNumber.split(".")[0]);
         this.arrayData.push(numberAgain)
         this.arrayWithDate.push({
-          data : this.arrayDiaIHora[i].toISOString().slice(0, -5),
-          consum : numberAgain
+          data: this.arrayDiaIHora[i].toLocaleString(),
+          consum: numberAgain
         })
         i++;
       })
-      console.log("arrayData:")
-      console.log(this.arrayData)
-
-            console.log("arrayWithDate:")
-      console.log(this.arrayWithDate)
-
       this.localStorageService.setLastPrediction(this.arrayWithDate)
 
+      this.lineChartData.labels = [];
+      this.lineChartData.datasets = [];
       this.arrayData.forEach(result => {
         this.lineChartData.labels.push('')
       })
@@ -127,7 +134,7 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
       );
       this.loadedImage = true;
       // @ts-ignore
-      document.getElementById('image').src = test.plot
+      // document.getElementById('image').src = test.plot
     })
   }
 
@@ -216,8 +223,8 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
 }
 
 class consumIData {
-  consum : number;
-  data : string
+  consum: number;
+  data: string
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

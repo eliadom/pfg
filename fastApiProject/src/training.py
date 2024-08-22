@@ -81,42 +81,33 @@ def genera_prediccio(nomexcel, numDies, horaInicial):
 
     X_mostresREST = np.load(novaRutaMostresX)
     X_mostresREST.flatten().reshape(-1, 1, 1)
-    print(X_mostresREST.shape)
-    print(X_mostresREST)
 
     ## PREDICCIO --------------------
 
-    N = 24800
+    # N = 24800
+    # N = 24800
 
     X_mostresPRED = X_mostresREST
-    prediction = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
-    prediction_copies = np.repeat(prediction, 6, axis=-1)
+    prediction = lstm_model.predict(X_mostresPRED, verbose=2)
+    prediction_copies = np.repeat(prediction, 10, axis=-1)
 
-    prediccio24h = prediction_copies[:0]
-    # prediccio24h = []
+    prediction_copies = np.vstack((prediction_copies, prediction_copies))
+    while (len(prediction) < (numDies*24)):
+        prediction_copies = np.vstack((prediction_copies, prediction_copies))
 
-    for i in range(1, numDies+1):
-        diaSeguent = lstm_model.predict(X_mostresPRED[-N:], verbose=2)
-        n = len(diaSeguent)
-        i = 0
-        resul = []
-        while i < n:
-            if i + 2 < n:  # Verifica que existan al menos 3 elementos restantes
-                suma = diaSeguent[i] + diaSeguent[i + 1] + diaSeguent[i + 2]
-                resul.append(suma)
-                i += 3
-            else:  # Si no hay suficientes elementos para formar un grupo de 3, añade los elementos restantes
-                resul.extend(diaSeguent[i:])
-                break
-        prediction_copies = np.repeat(resul, 6, axis=-1)
-        prediccio24h = np.concatenate((prediccio24h, prediction_copies[:24]))
 
-    # predicted_consum = scaler.transform(prediction_copies)
+    prediccio24h = prediction_copies.tolist()
+    prediccio24h = [sublist[0] for sublist in prediccio24h]
+    prediccio24h = [sum(prediccio24h[i:i + 4]) for i in range(0, len(prediccio24h), 4)]
 
+    # en començar a les x primeres hores, les treiem
     prediccio24h = prediccio24h[horaInicial:]
+    prediccio24h = prediccio24h[:(24 * numDies)]
+
+
 
     plt.figure(figsize=(16, 4))
-    plt.plot(prediccio24h, alpha=0.7, color='orange', label='Consum predit')
+    plt.plot(prediccio24h, alpha=0.7, color='orange')
     plt.xlabel('Temps')
     plt.ylabel('Consum d\'aigua')
     plt.legend()
@@ -124,7 +115,7 @@ def genera_prediccio(nomexcel, numDies, horaInicial):
 
     print("Predicted consum:")
     print(prediccio24h)
-    return prediccio24h.tolist(), plt
+    return prediccio24h, plt
 
 
 def processa_dades(nomexcel):

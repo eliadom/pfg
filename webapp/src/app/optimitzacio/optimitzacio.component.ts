@@ -46,7 +46,6 @@ export class OptimitzacioComponent implements OnInit {
 
   ngOnInit() {
     this.ultimaPrediccio = this.localStorageService.getLastPrediction();
-    console.log(this.ultimaPrediccio)
   }
 
   generaExcel() {
@@ -54,6 +53,16 @@ export class OptimitzacioComponent implements OnInit {
     this.mainService.generaExcel(this.ultimaPrediccio.data).subscribe((response: Blob) => {
       const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       saveAs(blob, 'prediccio.xlsx');
+      this.loading++;
+    })
+  }
+
+  generaExcelOptim(){
+        this.loading--;
+        console.log(this.optimitzacioRebuda)
+    this.mainService.generaExcelOptimitzacio(this.optimitzacioRebuda).subscribe((response: Blob) => {
+      const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      saveAs(blob, 'optimitzacio.xlsx');
       this.loading++;
     })
   }

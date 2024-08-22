@@ -65,7 +65,11 @@ export class MainService {
   }
 
   generaExcel(array: any): any {
-    return this.http.post<any>(this.url + '/excel', array, { responseType: 'blob' as 'json' });
+    return this.http.post<any>(this.url + '/excel', array, {responseType: 'blob' as 'json'});
+  }
+
+  generaExcelOptimitzacio(array: any): any {
+    return this.http.post<any>(this.url + '/excel_optimitzacio', array, {responseType: 'blob' as 'json'});
   }
 
 
@@ -73,13 +77,13 @@ export class MainService {
     return this.http.get<any>(this.url + '/getPreus');
   }
 
-  optimitza(consumIData : any, capacitat : number, consum: number, bombeig: number){
+  optimitza(consumIData: any, capacitat: number, consum: number, bombeig: number) {
     return this.http.post<any>(this.url + '/optimitzacio', {
       data_i_consum: consumIData,
       capacitat: capacitat,
       consum: consum,
       bombeig: bombeig
-    }, { headers : headerDict});
+    }, {headers: headerDict});
   }
 
   getModels(): any {
