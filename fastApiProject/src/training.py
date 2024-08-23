@@ -66,42 +66,40 @@ from keras.src.legacy.saving import legacy_h5_format
 
 def genera_prediccio(nomexcel, numDies, horaInicial):
 
+    # restauracio del model h5
     directoriActual = os.path.dirname(os.path.abspath(__file__))
     save_path = (os.path.join('model', nomexcel + ".h5"))
     novaRuta = os.path.join(directoriActual, save_path)
 
-    # guardem model LSTM
-
-    # lstm_model = load_model(novaRuta , custom_objects={'MSE': 'mean_squared_error'})
     lstm_model = legacy_h5_format.load_model_from_hdf5(novaRuta, custom_objects={'MSE': 'MSE'})
 
-
+    # restauracio de l'array de mostres
     save_path_mostresX = (os.path.join('model', nomexcel + "Xmostres.npy"))
     novaRutaMostresX = os.path.join(directoriActual, save_path_mostresX)
 
     X_mostresREST = np.load(novaRutaMostresX)
+    # flatten per poder aplicar l'algoritme LSTM
     X_mostresREST.flatten().reshape(-1, 1, 1)
 
     ## PREDICCIO --------------------
 
-    # N = 24800
-    # N = 24800
-
     X_mostresPRED = X_mostresREST
+    # prediccio inicial
     prediction = lstm_model.predict(X_mostresPRED, verbose=2)
-    prediction_copies = np.repeat(prediction, 10, axis=-1)
 
-    prediction_copies = np.vstack((prediction_copies, prediction_copies))
-    while (len(prediction) < (numDies*24)):
-        prediction_copies = np.vstack((prediction_copies, prediction_copies))
+    # allargament de la prediccio si es volen mes dies que els esperats
+    while (len(prediction) < (numDies*24 + horaInicial)):
+        prediction_copies = lstm_model.predict(X_mostresPRED, verbose=2)
+        prediction = np.vstack((prediction, prediction_copies))
 
 
-    prediccio24h = prediction_copies.tolist()
+    prediccio24h = prediction.tolist()
     prediccio24h = [sublist[0] for sublist in prediccio24h]
     prediccio24h = [sum(prediccio24h[i:i + 4]) for i in range(0, len(prediccio24h), 4)]
 
-    # en començar a les x primeres hores, les treiem
+    # en començar a les x primeres hores, les treiem per començar el cicle a la hora 0
     prediccio24h = prediccio24h[horaInicial:]
+    # nomes agafem les hores dels dies que necessitem.
     prediccio24h = prediccio24h[:(24 * numDies)]
 
 

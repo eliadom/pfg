@@ -24,12 +24,24 @@
         <li>
           Per a millors resultats, entrar històrics de, com a mínim, <b>24 hores</b>
         </li>
+      </ul>
+      Si vols prediccions a llarg termini:
+      <ul>
+        <li>
+          Intenta que hi hagi una periodicitat predeterminada. Es recomanen entrar registres de <b>1 dia, 7 dies, 14
+          dies,
+          30 dies.</b>
+        </li>
+        <li>
+          Intenta evitar un nombre de registres massa proper - però no coincident - amb els de periodicitat recomanada.
+          No són bons registres les mostres de  <b>2 dies, 6 dies, 13 dies.</b>
+        </li>
 
       </ul>
     </div>
-      <div *ngIf="chosenFile && !pujantModel">
-        Model penjat! Recorda seleccionar-lo abans de fer prediccions.
-      </div>
+    <div *ngIf="chosenFile && !pujantModel">
+      Model penjat! Recorda seleccionar-lo abans de fer prediccions.
+    </div>
 
     <div class="contenidorSencer" *ngIf="pujantModel">
       <mat-spinner

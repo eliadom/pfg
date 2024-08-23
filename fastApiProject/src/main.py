@@ -77,7 +77,7 @@ def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
     # Funció objectiu
     problema += pulp.lpSum(preus_preparats[t][1]['price'] * B[t] * data_model.consum for t in range(hores))
 
-    # Restricciones
+    # Restriccions
     for t in range(hores):
         print(t)
         if t == 0:
