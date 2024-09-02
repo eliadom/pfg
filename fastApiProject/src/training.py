@@ -87,8 +87,8 @@ def genera_prediccio(nomexcel, numDies, horaInicial):
     # prediccio inicial
     prediction = lstm_model.predict(X_mostresPRED, verbose=2)
 
-    # allargament de la prediccio si es volen mes dies que els esperats
-    while (len(prediction) < (numDies*24 + horaInicial)):
+    # allargament de la prediccio si es volen mes dies que els esperats, tenint en compte que es fan les prediccions a les 0h
+    while (len(prediction) < (numDies*24*4 + horaInicial)):
         prediction_copies = lstm_model.predict(X_mostresPRED, verbose=2)
         prediction = np.vstack((prediction, prediction_copies))
 

@@ -1,8 +1,9 @@
 
-.mainContainer{
-    font-family: "Inria Sans" !important;
-    font-size: 18px;
+.mainContainer {
+  font-family: "Inria Sans" !important;
+  font-size: 18px;
 }
+
 .divSimple {
   background-color: white;
   border-radius: 20px;
@@ -12,13 +13,13 @@
   overflow: hidden;
 }
 
-.optimitzacioContainers{
+.optimitzacioContainers {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.contenidorDetalls{
+.contenidorDetalls {
   display: flex;
   width: calc(100% - 128px);
   gap: 16px;
@@ -26,13 +27,13 @@
   padding: 64px;
 }
 
-.contenidorInput{
+.contenidorInput {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.botoGenerar{
+.botoGenerar {
   width: 100%;
   margin: 0 auto;
   align-items: center !important;
@@ -40,7 +41,7 @@
 
 }
 
-.headerDescarregaExcel{
+.headerDescarregaExcel {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -71,17 +72,38 @@
   justify-content: space-between;
 }
 
-.col{
+
+.col {
   text-align: center;
   width: 100%;
 }
 
-.prediccionsOverflow{
+.baix {
+  background-color: rgb(205, 96, 96, 0.7);
+  color: white;
+}
+
+.mitja {
+    background-color: rgb(255, 165, 0, 0.7);
+  color: white;
+}
+
+.alt {
+  background-color: rgb(0, 128, 0, 0.7);
+  color: white;
+}
+
+.full {
+  background-color: rgb(100, 149, 237, 0.7);
+  color: white;
+}
+
+.prediccionsOverflow {
   height: calc(100% - 42px);
   overflow: scroll;
 }
 
-.costTotalContainer{
+.costTotalContainer {
   width: 100%;
   text-align: center;
 }

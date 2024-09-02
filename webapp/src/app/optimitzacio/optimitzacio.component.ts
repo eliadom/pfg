@@ -31,16 +31,7 @@ export class OptimitzacioComponent implements OnInit {
 
   prediccioFeta : boolean = false;
   optimitzacioRebuda : any;
-
-  preus = []
-
-  // retornaPreus() {
-  //   this.mainService.demanaPreu().subscribe((preus: any) => {
-  //     console.log("preus:")
-  //     console.log(preus)
-  //     this.preus = preus;
-  //   })
-  // }
+  loadingOptimitzacio : number = 0;
 
   ultimaPrediccio: { data: any, dia: Date }
 
@@ -72,10 +63,12 @@ export class OptimitzacioComponent implements OnInit {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.valid) {
       this.capacitatTotal = this.formGroup.get("capacitat").value;
+      this.loadingOptimitzacio--;
       this.mainService.optimitza(this.ultimaPrediccio.data,
         this.formGroup.get("capacitat").value,
         this.formGroup.get("consum").value,
         this.formGroup.get("bombeig").value).subscribe((optimitzacio : any) => {
+          this.loadingOptimitzacio++;
         this.prediccioFeta = true;
         this.optimitzacioRebuda = optimitzacio.llista
         this.costTotal = optimitzacio.total

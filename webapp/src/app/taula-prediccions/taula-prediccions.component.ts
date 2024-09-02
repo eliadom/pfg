@@ -64,28 +64,28 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
   arrayWithDate: consumIData[] = [];
 
   generaExcel() {
-    this.loading--;
     this.mainService.generaExcel(this.arrayWithDate).subscribe((response: Blob) => {
       const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       saveAs(blob, 'prediccio.xlsx');
-      this.loading++;
     })
   }
 
-  generaPrediccioDe() {
+  descarregaGrafic() {
+    var decodedImage = this.image;
+    var blob = new Blob([decodedImage], {type: 'image/png'});
+    saveAs(decodedImage, 'grafic.png');
+  }
 
-    this.arrayDiaIHora = [];
+  image = '';
+
+  generaPrediccioDe() {
     this.arrayWithDate = [];
     this.arrayData = [];
-
+    this.arrayDiaIHora = [];
     let tomorrow: Date = new Date();
-    // tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow = new Date(tomorrow)
     tomorrow.setHours(23, 0, 0, 0);
     tomorrow = new Date(tomorrow)
-    console.log("tomorrow:")
-    console.log(tomorrow.getDate())
-
     for (let i = 0; i < this.sliderValue; i++) {
       for (let j = 0; j < 24; j++) {
         tomorrow.setTime(tomorrow.getTime() + (1 * 60 * 60 * 1000));
@@ -93,14 +93,10 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
         tomorrow = new Date(tomorrow)
       }
     }
-
-    console.log(this.arrayDiaIHora)
-
     this.loading--;
     this.mainService.generaDeDies(this.sliderValue).subscribe((test: any) => {
+      this.image = test.plot;
       this.loading++;
-      // this.arrayData = test.resul;
-
       let i = 0;
       test.resul.forEach(numberReceived => {
         let retNumber: string = numberReceived.toString();
@@ -112,8 +108,7 @@ export class TaulaPrediccionsComponent implements OnInit, AfterViewInit {
         })
         i++;
       })
-      this.localStorageService.setLastPrediction(this.arrayWithDate)
-
+      this.localStorageService.setLastPrediction(this.arrayWithDate);
       this.lineChartData.labels = [];
       this.lineChartData.datasets = [];
       this.arrayData.forEach(result => {

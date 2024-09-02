@@ -2,8 +2,15 @@
   <div class="mainContainer" *ngIf="loading === 0">
     <h1>Optimització</h1>
     <div class="divSimple">
+      <div class="contenidorSencer" *ngIf="loadingOptimitzacio !== 0">
+        <mat-spinner
+        ></mat-spinner>
+        <div class="textGeneric centraText">
+          Generant optimitació...
+        </div>
+      </div>
       <div *ngIf="!ultimaPrediccio">No s'ha trobat cap predicció recent.</div>
-      <div *ngIf="ultimaPrediccio && !prediccioFeta" class="optimitzacioContainers">
+      <div *ngIf="ultimaPrediccio && !prediccioFeta && (loadingOptimitzacio === 0)" class="optimitzacioContainers">
         <div class="headerDescarregaExcel">
           <p>
             Es farà una <b>optimizació d'aprovisionament</b> sobre la predicció feta el
@@ -46,8 +53,8 @@
         <div class="botoGenerar">
           <button mat-button class="botoDefault" (click)="enviaForm()">Genera optimització</button>
         </div>
-
       </div>
+
       <ng-container *ngIf="ultimaPrediccio && prediccioFeta">
         <div style="display: flex">
           <div class="costTotalContainer">Cost total: {{ costTotal }}€</div>
@@ -76,14 +83,23 @@
           </div>
           <div class="prediccionsOverflow">
             <ng-container *ngFor="let prediccioIndiv of optimitzacioRebuda; let i = index">
+              <div class="divisor" *ngIf="optimitzacioRebuda[i].hora % 24 !== 0"></div>
+
+              <div *ngIf="optimitzacioRebuda[i].hora % 24 === 0" class="prediccionsFosc">
+                Dia {{ (optimitzacioRebuda[i].hora / 24) + 1 }}
+              </div>
               <div class="prediccions">
                 <div class="col">{{ optimitzacioRebuda[i].hora }}</div>
                 <div class="col">{{ optimitzacioRebuda[i].bombeig }}</div>
                 <div class="col">{{ ultimaPrediccio.data[i].consum }}L</div>
                 <div class="col">{{ optimitzacioRebuda[i].capacitat }}L</div>
-                <div class="col">{{ (optimitzacioRebuda[i].capacitat / capacitatTotal) * 100 }}%</div>
+                <div class="col" [ngClass]="(((optimitzacioRebuda[i].capacitat / capacitatTotal) * 100) < 40) ? 'baix' :
+                                              (((optimitzacioRebuda[i].capacitat / capacitatTotal) * 100) < 70) ? 'mitja' :
+                                              (((optimitzacioRebuda[i].capacitat / capacitatTotal) * 100) === 100.00) ? 'full' : 'alt'">{{ ((optimitzacioRebuda[i].capacitat / capacitatTotal) * 100) | number : '1.2-2' }}
+                  %
+                </div>
               </div>
-              <div class="divisor"></div>
+
             </ng-container>
           </div>
         </div>

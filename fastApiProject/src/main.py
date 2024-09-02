@@ -60,17 +60,17 @@ def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
     preuElectricitat = get_preus()
     preus_preparats = list(preuElectricitat.items())
 
-    # Passem el consum entrat a MWh
+    # Passem el consum entrat a MWh i litres per hora
     data_model.consum = data_model.consum / 1000;
     data_model.bombeig = data_model.bombeig * 60;
 
     hores = len(data_model.data_i_consum)
     while len(preus_preparats) < len(data_model.data_i_consum):
-        preus_preparats += preus_preparats  # Duplica la lista `a`
+        preus_preparats += preus_preparats  # Duplica la llista de preus
 
     # Variables de decisió
-    B = pulp.LpVariable.dicts("Bombeo", range(hores), lowBound=0, upBound=data_model.bombeig, cat='Continuous')
-    S = pulp.LpVariable.dicts("Almacenamiento", range(hores), lowBound=0, upBound=data_model.capacitat, cat='Continuous')
+    B = pulp.LpVariable.dicts("Bombeig", range(hores), lowBound=0, upBound=data_model.bombeig, cat='Continuous')
+    S = pulp.LpVariable.dicts("Emmagatzematge", range(hores), lowBound=0, upBound=data_model.capacitat, cat='Continuous')
 
     S[-1] = 50  # Partirem de 50L inicials
 
@@ -88,15 +88,12 @@ def optimitza(data_model: schemas.InfoPerOptimitzar, response_model=list[any]):
         problema += S[t] >= data_model.data_i_consum[t].consum
         problema += B[t] <= data_model.bombeig  # Restricción de bombeo máximo por hora
 
-    # Resolver el problema
+    # Resolució del problema
     problema.solve()
 
     # Resultados
-    print("Estado de optimización:", pulp.LpStatus[problema.status])
-    print("Costo total de electricidad: $", pulp.value(problema.objective))
     novaLlista = []
     for t in range(hores):
-        print(f"Hora {t}: Bombeo = {B[t].varValue:.2f} litros, Almacenamiento = {S[t].varValue:.2f} litros")
         entrada = {
             'hora': t,
             'bombeig': B[t].varValue,
